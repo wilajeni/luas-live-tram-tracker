@@ -34,6 +34,9 @@
   --bg-button-translucent: rgba(0, 0, 0, 0.3);
   --bg-button-hover: rgba(255, 255, 255, 0.05);
   --bg-row: rgba(0, 0, 0, 0.2);
+  --bg-tab-group: rgba(0, 0, 0, 0.25);
+  --bg-subtle: rgba(255, 255, 255, 0.05);
+  --bg-subtle-hover: rgba(255, 255, 255, 0.1);
   
   /* Warning Banner Colors */
   --alert-red-bg: rgba(255, 40, 40, 0.18);
@@ -78,8 +81,11 @@ body.light-theme {
   /* Inputs, Buttons, & Row Elements */
   --bg-input: rgba(0, 0, 0, 0.04);
   --bg-button-translucent: rgba(0, 0, 0, 0.03);
-  --bg-button-hover: rgba(0, 0, 0, 0.05);
-  --bg-row: rgba(0, 0, 0, 0.02);
+  --bg-button-hover: rgba(0, 0, 0, 0.06);
+  --bg-row: rgba(0, 0, 0, 0.03);
+  --bg-tab-group: rgba(0, 0, 0, 0.05);
+  --bg-subtle: rgba(0, 0, 0, 0.03);
+  --bg-subtle-hover: rgba(0, 0, 0, 0.07);
   
   /* Warning Banner Colors */
   --alert-red-bg: rgba(207, 34, 46, 0.08);
@@ -188,7 +194,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .glass-card:hover {
   background-color: var(--bg-card-hover);
-  border-color: rgba(139, 148, 158, 0.3);
+  border-color: var(--border-color-focus);
 }
 
 .panel-title {
@@ -292,7 +298,7 @@ h1, h2, h3, h4, h5, h6 {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 6px;
-  background: rgba(0, 0, 0, 0.3);
+  background: var(--bg-tab-group);
   padding: 4px;
   border-radius: 10px;
   border: 1px solid var(--border-color);
@@ -493,7 +499,7 @@ h1, h2, h3, h4, h5, h6 {
 .tram-filter-btn:hover {
   color: var(--text-primary);
   border-color: var(--border-color-focus);
-  background-color: rgba(88, 166, 255, 0.1);
+  background-color: var(--bg-subtle-hover);
 }
 
 .tram-results-list {
@@ -523,7 +529,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .tram-result-row:hover {
   background-color: var(--bg-button-hover);
-  border-color: rgba(139, 148, 158, 0.35);
+  border-color: var(--border-color-focus);
 }
 
 .tram-result-row.stale {
@@ -620,7 +626,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .btn-line-select:hover {
   background-color: var(--bg-button-hover);
-  border-color: rgba(255, 255, 255, 0.2);
+  border-color: var(--border-color-focus);
 }
 
 .dot {
@@ -711,7 +717,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .fly-to-btn {
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: var(--bg-subtle);
   border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 8px;
@@ -721,7 +727,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .fly-to-btn:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: var(--bg-subtle-hover);
   border-color: var(--border-color-focus);
 }
 
@@ -731,7 +737,7 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 600;
   background-color: rgba(88, 166, 255, 0.1);
   border: 1px solid rgba(88, 166, 255, 0.25);
-  color: #58a6ff;
+  color: var(--text-muted);
   padding: 2px 6px;
   border-radius: 4px;
   display: flex;
@@ -740,10 +746,15 @@ h1, h2, h3, h4, h5, h6 {
   white-space: nowrap;
 }
 
+body.light-theme .feature-badge {
+  background-color: rgba(9, 105, 218, 0.08);
+  border-color: rgba(9, 105, 218, 0.2);
+}
+
 .departure-tabs {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
-  background: rgba(0, 0, 0, 0.25);
+  background: var(--bg-tab-group);
   border-radius: 10px;
   padding: 4px;
   border: 1px solid var(--border-color);
@@ -785,7 +796,7 @@ h1, h2, h3, h4, h5, h6 {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: rgba(0, 0, 0, 0.2);
+  background-color: var(--bg-row);
   border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 6px 10px;
@@ -793,8 +804,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .timetable-row:hover {
-  background-color: rgba(255, 255, 255, 0.02);
-  border-color: rgba(139, 148, 158, 0.2);
+  background-color: var(--bg-button-hover);
+  border-color: var(--border-color-focus);
 }
 
 .train-dest-info {

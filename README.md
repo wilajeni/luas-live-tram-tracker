@@ -72,7 +72,13 @@ The backend dynamically estimates the position of trams between stations when li
 
 ## Version History
 
-- **v1.0** (Current)
+- **v1.1** (Current)
+  - Added full Light Theme support toggled via a floating Sun/Moon button, switching between CartoDB Dark Matter and Positron tiles dynamically.
+  - Implemented dynamic departures board tabs (Inbound, Outbound, Terminating) adapting via CSS Grid.
+  - Relocated Park & Ride (`P&R`) and Cycle Parking (`CP`) facilities directly to the station title line as compact pills.
+  - Cleaned up borders and inputs to react gracefully to color theme variables.
+  - Removed overall shadow of the left sidebar for a cleaner flat design.
+- **v1.0**
   - Simplified departures timetable card to render rows compactly in a single line.
   - Added internal scrollbar inside `#station-departures-card` timetable list.
   - Implemented spherical bearing formulas for tram arrows.
