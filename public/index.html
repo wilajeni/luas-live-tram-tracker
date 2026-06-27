@@ -72,27 +72,26 @@
         <!-- Populated State: Station Details and Forecast -->
         <div class="departures-content" id="departures-real-content" style="display: none;">
           <div class="station-meta-header" style="align-items: center;">
-            <div style="display: flex; align-items: center; gap: 8px;">
+            <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
               <h3 id="selected-stop-name" style="margin: 0;">Abbey Street</h3>
               <span id="selected-stop-abbrev" class="station-code-badge" style="margin-top: 0;">ABB</span>
+              <span id="feature-park-ride" class="feature-badge" title="Park & Ride" style="display: none;"><i class="fa-solid fa-square-p"></i> P&R</span>
+              <span id="feature-cycle" class="feature-badge" title="Cycle Parking" style="display: none;"><i class="fa-solid fa-bicycle"></i> CP</span>
             </div>
             <button id="btn-fly-to-stop" class="fly-to-btn" title="Center map on station"><i class="fa-solid fa-crosshairs"></i></button>
           </div>
 
-          <!-- Station Features (icons showing Park & Ride, Cycle facilities) -->
-          <div class="station-features" id="selected-stop-features">
-            <span class="feature-item" id="feature-park-ride" style="display: none;"><i class="fa-solid fa-square-p"></i> Park & Ride</span>
-            <span class="feature-item" id="feature-cycle" style="display: none;"><i class="fa-solid fa-bicycle"></i> Cycle Parking</span>
-          </div>
 
-
-          <!-- Tabs for Inbound & Outbound boards -->
+          <!-- Tabs for Inbound, Outbound & Terminating boards -->
           <div class="departure-tabs">
             <button id="tab-inbound" class="tab-btn active">
               <span id="inbound-tab-title">Inbound</span>
             </button>
             <button id="tab-outbound" class="tab-btn">
               <span id="outbound-tab-title">Outbound</span>
+            </button>
+            <button id="tab-terminating" class="tab-btn" style="display: none;">
+              <span id="terminating-tab-title">Terminating</span>
             </button>
           </div>
 
@@ -108,6 +107,9 @@
               <!-- Dynamically populated rows -->
             </div>
             <div class="timetable-list" id="timetable-outbound-list" style="display: none;">
+              <!-- Dynamically populated rows -->
+            </div>
+            <div class="timetable-list" id="timetable-terminating-list" style="display: none;">
               <!-- Dynamically populated rows -->
             </div>
             
@@ -185,8 +187,9 @@
       <!-- Map Container -->
       <div id="live-map-container" class="map-view-box"></div>
       
-      <!-- Floating Map Controls (Zoom reset, Layer toggles) -->
+      <!-- Floating Map Controls (Zoom reset, Layer toggles, Theme toggle) -->
       <div class="map-overlay-controls">
+        <button id="btn-toggle-theme" class="map-floating-btn" title="Toggle light/dark theme"><i class="fa-solid fa-sun"></i></button>
         <button id="btn-reset-view" class="map-floating-btn" title="Reset view to full Dublin area"><i class="fa-solid fa-globe"></i></button>
         <button id="btn-toggle-trams" class="map-floating-btn active" title="Toggle active tram markers"><i class="fa-solid fa-train"></i></button>
       </div>

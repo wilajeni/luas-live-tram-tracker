@@ -16,9 +16,10 @@ let knownVehicles = [];
 let tramFinderLineFilter = 'All';
 let vehicleHistoryMeta = { currentCount: 0, lastUpdated: null };
 
-// CartoDB Dark Matter map tile URL
-const MAP_TILES = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+const MAP_TILES_DARK = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+const MAP_TILES_LIGHT = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
 const MAP_ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>';
+let tileLayer;
 
 // Map track geometries paths stop abbrevs
 const TRACKS_PATHS = {
@@ -73,7 +74,7 @@ function initMap() {
     maxZoom: 18
   }).setView([53.335, -6.26], 12);
 
-  L.tileLayer(MAP_TILES, {
+  tileLayer = L.tileLayer(MAP_TILES_DARK, {
     attribution: MAP_ATTRIBUTION,
     subdomains: 'abcd',
     maxZoom: 20
@@ -526,6 +527,7 @@ async function fetchStopForecast(abbrev) {
   document.getElementById('departures-loading').style.display = 'flex';
   document.getElementById('timetable-inbound-list').style.display = 'none';
   document.getElementById('timetable-outbound-list').style.display = 'none';
+  document.getElementById('timetable-terminating-list').style.display = 'none';
   document.getElementById('departures-none-msg').style.display = 'none';
 
   try {
@@ -535,20 +537,36 @@ async function fetchStopForecast(abbrev) {
     // Clear loading
     document.getElementById('departures-loading').style.display = 'none';
 
-    // Group arrivals by inbound/outbound
+    // Group arrivals by inbound/outbound/terminating
     const inboundTrams = data.trams.filter(t => t.direction === 'Inbound');
     const outboundTrams = data.trams.filter(t => t.direction === 'Outbound');
+    const terminatingTrams = data.trams.filter(t => t.direction === 'Terminating');
+
+    const hasTerminating = terminatingTrams.length > 0;
+    const tabTerminating = document.getElementById('tab-terminating');
+    if (hasTerminating) {
+      tabTerminating.style.display = 'flex';
+    } else {
+      tabTerminating.style.display = 'none';
+      if (currentTab === 'Terminating') {
+        currentTab = 'Inbound';
+        document.getElementById('tab-inbound').classList.add('active');
+        document.getElementById('tab-outbound').classList.remove('active');
+        tabTerminating.classList.remove('active');
+      }
+    }
 
     // Populate lists
-    populateTimetableList('timetable-inbound-list', inboundTrams, stopMarkers[abbrev] ? stopsMap[abbrev].line : 'Red');
-    populateTimetableList('timetable-outbound-list', outboundTrams, stopMarkers[abbrev] ? stopsMap[abbrev].line : 'Red');
+    const lineTheme = stopMarkers[abbrev] ? stopsMap[abbrev].line : 'Red';
+    populateTimetableList('timetable-inbound-list', inboundTrams, lineTheme);
+    populateTimetableList('timetable-outbound-list', outboundTrams, lineTheme);
+    populateTimetableList('timetable-terminating-list', terminatingTrams, lineTheme);
 
     // Show active tab
     showActiveTimetableTab();
 
-    // Check if both lists are empty
-    if (inboundTrams.length === 0 && outboundTrams.length === 0) {
-
+    // Check if all lists are empty
+    if (inboundTrams.length === 0 && outboundTrams.length === 0 && terminatingTrams.length === 0) {
       document.getElementById('departures-none-msg').style.display = 'flex';
     }
 
@@ -598,14 +616,11 @@ function populateTimetableList(elementId, trams, lineTheme) {
 function showActiveTimetableTab() {
   const inboundList = document.getElementById('timetable-inbound-list');
   const outboundList = document.getElementById('timetable-outbound-list');
+  const terminatingList = document.getElementById('timetable-terminating-list');
 
-  if (currentTab === 'Inbound') {
-    inboundList.style.display = 'flex';
-    outboundList.style.display = 'none';
-  } else {
-    inboundList.style.display = 'none';
-    outboundList.style.display = 'flex';
-  }
+  inboundList.style.display = currentTab === 'Inbound' ? 'flex' : 'none';
+  outboundList.style.display = currentTab === 'Outbound' ? 'flex' : 'none';
+  terminatingList.style.display = currentTab === 'Terminating' ? 'flex' : 'none';
 }
 
 // Local second-by-second countdown logic so ETAs count down smoothly
@@ -720,23 +735,21 @@ function setupUIEventListeners() {
     }
   });
 
-  // Tab buttons inbound/outbound
+  // Tab buttons inbound/outbound/terminating
   const tabInbound = document.getElementById('tab-inbound');
   const tabOutbound = document.getElementById('tab-outbound');
+  const tabTerminating = document.getElementById('tab-terminating');
 
-  tabInbound.addEventListener('click', () => {
-    currentTab = 'Inbound';
-    tabInbound.classList.add('active');
-    tabOutbound.classList.remove('active');
+  const selectTab = (tabName, activeBtn) => {
+    currentTab = tabName;
+    [tabInbound, tabOutbound, tabTerminating].forEach(btn => btn.classList.remove('active'));
+    activeBtn.classList.add('active');
     showActiveTimetableTab();
-  });
+  };
 
-  tabOutbound.addEventListener('click', () => {
-    currentTab = 'Outbound';
-    tabOutbound.classList.add('active');
-    tabInbound.classList.remove('active');
-    showActiveTimetableTab();
-  });
+  tabInbound.addEventListener('click', () => selectTab('Inbound', tabInbound));
+  tabOutbound.addEventListener('click', () => selectTab('Outbound', tabOutbound));
+  tabTerminating.addEventListener('click', () => selectTab('Terminating', tabTerminating));
 
   // Mode select buttons on diagnosis card
   const btnAuto = document.getElementById('btn-mode-auto');
@@ -826,5 +839,20 @@ function setupUIEventListeners() {
   btnToggleTrams.addEventListener('click', () => {
     btnToggleTrams.classList.toggle('active');
     pollTrams();
+  });
+
+  // Toggle Theme float button on map overlay
+  const btnToggleTheme = document.getElementById('btn-toggle-theme');
+  btnToggleTheme.addEventListener('click', () => {
+    const isLight = document.body.classList.toggle('light-theme');
+    if (isLight) {
+      btnToggleTheme.innerHTML = '<i class="fa-solid fa-moon"></i>';
+      btnToggleTheme.title = 'Switch to dark theme';
+      tileLayer.setUrl(MAP_TILES_LIGHT);
+    } else {
+      btnToggleTheme.innerHTML = '<i class="fa-solid fa-sun"></i>';
+      btnToggleTheme.title = 'Switch to light theme';
+      tileLayer.setUrl(MAP_TILES_DARK);
+    }
   });
 }

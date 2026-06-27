@@ -29,6 +29,18 @@
   --status-simulated: #f1e05a;
   --status-disconnected: #ff4d4d;
   
+  /* Inputs, Buttons, & Row Elements */
+  --bg-input: rgba(0, 0, 0, 0.4);
+  --bg-button-translucent: rgba(0, 0, 0, 0.3);
+  --bg-button-hover: rgba(255, 255, 255, 0.05);
+  --bg-row: rgba(0, 0, 0, 0.2);
+  
+  /* Warning Banner Colors */
+  --alert-red-bg: rgba(255, 40, 40, 0.18);
+  --alert-red-text: #ff8080;
+  --alert-green-bg: rgba(0, 220, 100, 0.15);
+  --alert-green-text: #55dd90;
+
   /* Typography */
   --font-body: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --font-heading: 'Outfit', sans-serif;
@@ -36,8 +48,73 @@
   /* Effects */
   --blur-amount: 12px;
   --shadow-premium: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+  --shadow-dropdown: 0 10px 25px rgba(0, 0, 0, 0.6);
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.3);
+  --shadow-logo-drop: rgba(0, 0, 0, 0.5);
+  --shadow-floating-btn: 0 4px 15px rgba(0, 0, 0, 0.5);
   --transition-smooth: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
+
+body.light-theme {
+  --bg-main: #f0f2f5;
+  --bg-sidebar: rgba(255, 255, 255, 0.85);
+  --bg-card: rgba(255, 255, 255, 0.65);
+  --bg-card-hover: rgba(255, 255, 255, 0.85);
+  --border-color: rgba(0, 0, 0, 0.12);
+  --border-color-focus: rgba(9, 105, 218, 0.6);
+  
+  --text-primary: #24292f;
+  --text-secondary: #57606a;
+  --text-muted: #0969da;
+  
+  --red-line: #cf222e;
+  --red-line-glow: rgba(207, 34, 46, 0.3);
+  --red-line-bg: rgba(207, 34, 46, 0.08);
+  
+  --green-line: #1a7f37;
+  --green-line-glow: rgba(26, 127, 55, 0.3);
+  --green-line-bg: rgba(26, 127, 55, 0.08);
+
+  /* Inputs, Buttons, & Row Elements */
+  --bg-input: rgba(0, 0, 0, 0.04);
+  --bg-button-translucent: rgba(0, 0, 0, 0.03);
+  --bg-button-hover: rgba(0, 0, 0, 0.05);
+  --bg-row: rgba(0, 0, 0, 0.02);
+  
+  /* Warning Banner Colors */
+  --alert-red-bg: rgba(207, 34, 46, 0.08);
+  --alert-red-text: var(--red-line);
+  --alert-green-bg: rgba(26, 127, 55, 0.08);
+  --alert-green-text: var(--green-line);
+
+  --shadow-premium: 0 8px 32px 0 rgba(0, 0, 0, 0.06);
+  --shadow-dropdown: 0 10px 25px rgba(0, 0, 0, 0.1);
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.03);
+  --shadow-logo-drop: rgba(0, 0, 0, 0.15);
+  --shadow-floating-btn: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+/* Light Theme Element Customizations */
+body.light-theme .app-header h1 {
+  background: linear-gradient(180deg, #1c2128, #57606a);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+body.light-theme .station-code-badge {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+body.light-theme .btn-mode:hover:not(.active),
+body.light-theme .btn-line-select:hover {
+  background-color: var(--bg-button-hover);
+}
+
+body.light-theme .btn-mode.active,
+body.light-theme .departure-tabs .tab-btn.active {
+  background-color: rgba(0, 0, 0, 0.08);
+}
+
 
 /* 1. Global Reset & Base
    ========================================================================== */
@@ -85,7 +162,6 @@ h1, h2, h3, h4, h5, h6 {
   flex-direction: column;
   padding: 16px;
   gap: 12px;
-  box-shadow: 10px 0 30px rgba(0, 0, 0, 0.7);
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -106,7 +182,7 @@ h1, h2, h3, h4, h5, h6 {
   border: 1px solid var(--border-color);
   border-radius: 16px;
   padding: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-card);
   transition: var(--transition-smooth);
 }
 
@@ -147,7 +223,7 @@ h1, h2, h3, h4, h5, h6 {
   background: linear-gradient(135deg, var(--red-line), var(--green-line));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.5));
+  filter: drop-shadow(0 2px 5px var(--shadow-logo-drop));
 }
 
 .app-header h1 {
@@ -238,12 +314,12 @@ h1, h2, h3, h4, h5, h6 {
 .btn-mode.active {
   background-color: var(--border-color);
   color: var(--text-primary);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  box-shadow: var(--shadow-premium);
 }
 
 .btn-mode:hover:not(.active) {
   color: var(--text-primary);
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: var(--bg-button-hover);
 }
 
 /* 6. Station Finder / Search & Suggestions
@@ -263,7 +339,7 @@ h1, h2, h3, h4, h5, h6 {
 
 #station-search-input {
   width: 100%;
-  background-color: rgba(0, 0, 0, 0.4);
+  background-color: var(--bg-input);
   border: 1px solid var(--border-color);
   border-radius: 10px;
   padding: 10px 35px 10px 35px;
@@ -294,7 +370,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Suggestions Dropdown */
 .suggestions-list {
-  background-color: #161b22;
+  background-color: var(--bg-sidebar);
   border: 1px solid var(--border-color);
   border-radius: 10px;
   margin-top: 6px;
@@ -302,9 +378,10 @@ h1, h2, h3, h4, h5, h6 {
   overflow-y: auto;
   list-style: none;
   position: absolute;
-  width: calc(100% - 72px); /* matching card width */
+  left: 16px;
+  right: 16px;
   z-index: 1010;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+  box-shadow: var(--shadow-dropdown);
 }
 
 .suggestions-list li {
@@ -361,7 +438,7 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 700;
   color: var(--text-primary);
   border: 1px solid var(--border-color);
-  background-color: rgba(255, 255, 255, 0.06);
+  background-color: var(--bg-input);
   border-radius: 999px;
   padding: 3px 8px;
   white-space: nowrap;
@@ -369,7 +446,7 @@ h1, h2, h3, h4, h5, h6 {
 
 #tram-search-input {
   width: 100%;
-  background-color: rgba(0, 0, 0, 0.4);
+  background-color: var(--bg-input);
   border: 1px solid var(--border-color);
   border-radius: 10px;
   padding: 10px 35px 10px 35px;
@@ -397,7 +474,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .tram-filter-btn {
-  background-color: rgba(0, 0, 0, 0.3);
+  background-color: var(--bg-button-translucent);
   border: 1px solid var(--border-color);
   border-radius: 8px;
   color: var(--text-secondary);
@@ -434,7 +511,7 @@ h1, h2, h3, h4, h5, h6 {
   grid-template-columns: auto 1fr auto;
   align-items: center;
   gap: 10px;
-  background-color: rgba(0, 0, 0, 0.22);
+  background-color: var(--bg-row);
   border: 1px solid var(--border-color);
   border-radius: 8px;
   color: var(--text-primary);
@@ -445,7 +522,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .tram-result-row:hover {
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: var(--bg-button-hover);
   border-color: rgba(139, 148, 158, 0.35);
 }
 
@@ -526,7 +603,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .btn-line-select {
-  background-color: rgba(0, 0, 0, 0.3);
+  background-color: var(--bg-button-translucent);
   border: 1px solid var(--border-color);
   border-radius: 10px;
   padding: 10px;
@@ -542,7 +619,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .btn-line-select:hover {
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: var(--bg-button-hover);
   border-color: rgba(255, 255, 255, 0.2);
 }
 
@@ -649,29 +726,23 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Station Features badges */
-.station-features {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 5px;
-}
-
-.feature-item {
-  font-size: 0.75rem;
+.feature-badge {
+  font-size: 0.72rem;
+  font-weight: 600;
   background-color: rgba(88, 166, 255, 0.1);
-  border: 1px solid rgba(88, 166, 255, 0.2);
+  border: 1px solid rgba(88, 166, 255, 0.25);
   color: #58a6ff;
-  padding: 4px 8px;
-  border-radius: 6px;
+  padding: 2px 6px;
+  border-radius: 4px;
   display: flex;
   align-items: center;
   gap: 4px;
+  white-space: nowrap;
 }
 
-/* Tabs */
 .departure-tabs {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
   background: rgba(0, 0, 0, 0.25);
   border-radius: 10px;
   padding: 4px;
@@ -809,7 +880,7 @@ h1, h2, h3, h4, h5, h6 {
   max-width: 340px;
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+  box-shadow: var(--shadow-dropdown);
   transition: var(--transition-smooth);
   pointer-events: auto;
   white-space: nowrap;
@@ -819,7 +890,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Normal / no-disruption state: calm, low-contrast */
 .line-alert-banner.normal {
-  background-color: rgba(13, 17, 23, 0.72);
+  background-color: var(--bg-sidebar);
   border: 1px solid var(--border-color);
   color: var(--text-secondary);
 }
@@ -837,13 +908,13 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .line-alert-banner.red.warning {
-  background-color: rgba(255, 40, 40, 0.18);
-  color: #ff8080;
+  background-color: var(--alert-red-bg);
+  color: var(--alert-red-text);
 }
 
 .line-alert-banner.green.warning {
-  background-color: rgba(0, 220, 100, 0.15);
-  color: #55dd90;
+  background-color: var(--alert-green-bg);
+  color: var(--alert-green-text);
 }
 
 .line-alert-banner.warning .status-icon {
@@ -882,7 +953,7 @@ h1, h2, h3, h4, h5, h6 {
 .map-floating-btn {
   width: 44px;
   height: 44px;
-  background-color: rgba(13, 17, 23, 0.85);
+  background-color: var(--bg-sidebar);
   backdrop-filter: blur(var(--blur-amount));
   border: 1px solid var(--border-color);
   border-radius: 12px;
@@ -892,7 +963,7 @@ h1, h2, h3, h4, h5, h6 {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+  box-shadow: var(--shadow-floating-btn);
   transition: var(--transition-smooth);
 }
 
@@ -902,8 +973,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .map-floating-btn.active {
-  color: #58a6ff;
-  border-color: #58a6ff;
+  color: var(--text-muted);
+  border-color: var(--text-muted);
 }
 
 /* Leaflet Zoom control override */
@@ -914,7 +985,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .leaflet-control-zoom a {
-  background-color: rgba(22, 27, 34, 0.9) !important;
+  background-color: var(--bg-sidebar) !important;
   color: var(--text-primary) !important;
   border-bottom: 1px solid var(--border-color) !important;
 }
@@ -925,7 +996,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Map Popups and Attribution Override */
 .leaflet-popup-content-wrapper {
-  background-color: rgba(13, 17, 23, 0.9) !important;
+  background-color: var(--bg-sidebar) !important;
   backdrop-filter: blur(var(--blur-amount));
   border: 1px solid var(--border-color);
   border-radius: 10px !important;
@@ -934,7 +1005,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .leaflet-popup-tip {
-  background-color: rgba(13, 17, 23, 0.9) !important;
+  background-color: var(--bg-sidebar) !important;
   border-left: 1px solid var(--border-color);
   border-bottom: 1px solid var(--border-color);
 }
@@ -945,7 +1016,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .leaflet-control-attribution {
-  background-color: rgba(13, 17, 23, 0.8) !important;
+  background-color: var(--bg-sidebar) !important;
   color: var(--text-secondary) !important;
   border-radius: 5px 0 0 0;
   border-top: 1px solid var(--border-color);
