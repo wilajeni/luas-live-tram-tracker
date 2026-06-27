@@ -1,0 +1,1160 @@
+/* ==========================================================================
+   LUAS TRACKER STYLE SHEET - PREMIUM DARK GLASSMORPHISM DESIGN SYSTEM
+   ========================================================================== */
+
+:root {
+  /* Color Palette */
+  --bg-main: #0a0c10;
+  --bg-sidebar: rgba(13, 17, 23, 0.85);
+  --bg-card: rgba(22, 27, 34, 0.6);
+  --bg-card-hover: rgba(33, 38, 45, 0.8);
+  --border-color: rgba(48, 54, 61, 0.6);
+  --border-color-focus: rgba(88, 166, 255, 0.6);
+  
+  --text-primary: #f0f6fc;
+  --text-secondary: #8b949e;
+  --text-muted: #58a6ff;
+  
+  /* Line Colors */
+  --red-line: #ff4d4d;
+  --red-line-glow: rgba(255, 77, 77, 0.4);
+  --red-line-bg: rgba(255, 77, 77, 0.1);
+  
+  --green-line: #00e676;
+  --green-line-glow: rgba(0, 230, 118, 0.4);
+  --green-line-bg: rgba(0, 230, 118, 0.1);
+  
+  /* Status Colors */
+  --status-connected: #2ea44f;
+  --status-simulated: #f1e05a;
+  --status-disconnected: #ff4d4d;
+  
+  /* Typography */
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-heading: 'Outfit', sans-serif;
+  
+  /* Effects */
+  --blur-amount: 12px;
+  --shadow-premium: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+  --transition-smooth: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* 1. Global Reset & Base
+   ========================================================================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body, html {
+  width: 100%;
+  height: 100%;
+  font-family: var(--font-body);
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  overflow: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+/* 2. Layout Structure (Responsive Grid/Flex)
+   ========================================================================== */
+.app-container {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+}
+
+/* Sidebar Styles */
+.sidebar-panel {
+  width: 400px;
+  min-width: 380px;
+  height: 100%;
+  background-color: var(--bg-sidebar);
+  backdrop-filter: blur(var(--blur-amount));
+  -webkit-backdrop-filter: blur(var(--blur-amount));
+  border-right: 1px solid var(--border-color);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  gap: 12px;
+  box-shadow: 10px 0 30px rgba(0, 0, 0, 0.7);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Main Map Area */
+.main-map-panel {
+  flex: 1;
+  height: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 3. Glassmorphic Card Components
+   ========================================================================== */
+.glass-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  transition: var(--transition-smooth);
+}
+
+.glass-card:hover {
+  background-color: var(--bg-card-hover);
+  border-color: rgba(139, 148, 158, 0.3);
+}
+
+.panel-title {
+  font-size: 1.1rem;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.panel-title i {
+  color: var(--text-muted);
+}
+
+/* 4. App Header
+   ========================================================================== */
+.app-header {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 5px;
+}
+
+.logo-area {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-icon {
+  font-size: 2.2rem;
+  background: linear-gradient(135deg, var(--red-line), var(--green-line));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.5));
+}
+
+.app-header h1 {
+  font-size: 1.8rem;
+  font-weight: 800;
+  background: linear-gradient(180deg, #ffffff, #8b949e);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.app-tagline {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+/* 5. Status & Control Panel
+   ========================================================================== */
+.status-indicator-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.status-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+}
+
+.status-label {
+  color: var(--text-secondary);
+}
+
+/* Badges */
+.badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.badge-connected {
+  background-color: rgba(46, 164, 79, 0.2);
+  color: var(--status-connected);
+  border: 1px solid var(--status-connected);
+}
+
+.badge-sim {
+  background-color: rgba(241, 224, 90, 0.15);
+  color: var(--status-simulated);
+  border: 1px solid var(--status-simulated);
+}
+
+.badge-disconnected {
+  background-color: rgba(255, 77, 77, 0.2);
+  color: var(--status-disconnected);
+  border: 1px solid var(--status-disconnected);
+}
+
+/* Mode Switch Button Group */
+.mode-switch-group {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 4px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+}
+
+.btn-mode {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 8px 4px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  text-align: center;
+}
+
+.btn-mode.active {
+  background-color: var(--border-color);
+  color: var(--text-primary);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.btn-mode:hover:not(.active) {
+  color: var(--text-primary);
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* 6. Station Finder / Search & Suggestions
+   ========================================================================== */
+.search-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-input-icon {
+  position: absolute;
+  left: 12px;
+  color: var(--text-secondary);
+  pointer-events: none;
+}
+
+#station-search-input {
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 10px 35px 10px 35px;
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  outline: none;
+  transition: var(--transition-smooth);
+}
+
+#station-search-input:focus {
+  border-color: var(--border-color-focus);
+  box-shadow: 0 0 10px rgba(88, 166, 255, 0.15);
+}
+
+.clear-search-btn {
+  position: absolute;
+  right: 12px;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.clear-search-btn:hover {
+  color: var(--text-primary);
+}
+
+/* Suggestions Dropdown */
+.suggestions-list {
+  background-color: #161b22;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  margin-top: 6px;
+  max-height: 200px;
+  overflow-y: auto;
+  list-style: none;
+  position: absolute;
+  width: calc(100% - 72px); /* matching card width */
+  z-index: 1010;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+}
+
+.suggestions-list li {
+  padding: 10px 14px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(240, 246, 252, 0.05);
+}
+
+.suggestions-list li:last-child {
+  border-bottom: none;
+}
+
+.suggestions-list li:hover {
+  background-color: rgba(255,255,255,0.05);
+}
+
+.suggestion-name {
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.suggestion-line {
+  font-size: 0.75rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+/* Tram Finder */
+.tram-finder-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex-shrink: 0;         /* never compress this section */
+  max-height: 300px;      /* cap height; internal list scrolls */
+}
+
+.panel-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.panel-title-row .panel-title {
+  margin-bottom: 0;
+}
+
+.mini-count-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  background-color: rgba(255, 255, 255, 0.06);
+  border-radius: 999px;
+  padding: 3px 8px;
+  white-space: nowrap;
+}
+
+#tram-search-input {
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 10px 35px 10px 35px;
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  outline: none;
+  transition: var(--transition-smooth);
+}
+
+#tram-search-input:focus {
+  border-color: var(--border-color-focus);
+  box-shadow: 0 0 10px rgba(88, 166, 255, 0.15);
+}
+
+.tram-finder-meta {
+  color: var(--text-secondary);
+  font-size: 0.76rem;
+}
+
+.tram-line-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.tram-filter-btn {
+  background-color: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 7px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: var(--transition-smooth);
+}
+
+.tram-filter-btn.active,
+.tram-filter-btn:hover {
+  color: var(--text-primary);
+  border-color: var(--border-color-focus);
+  background-color: rgba(88, 166, 255, 0.1);
+}
+
+.tram-results-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow-y: auto;
+  min-height: 90px;
+  padding-right: 2px;
+}
+
+.tram-result-row {
+  width: 100%;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 10px;
+  background-color: rgba(0, 0, 0, 0.22);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-primary);
+  cursor: pointer;
+  padding: 9px 10px;
+  text-align: left;
+  transition: var(--transition-smooth);
+}
+
+.tram-result-row:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-color: rgba(139, 148, 158, 0.35);
+}
+
+.tram-result-row.stale {
+  opacity: 0.72;
+}
+
+.tram-number-pill {
+  min-width: 46px;
+  border-radius: 6px;
+  font-family: monospace;
+  font-size: 0.82rem;
+  font-weight: 800;
+  padding: 5px 7px;
+  text-align: center;
+  border: 1px solid currentColor;
+}
+
+.tram-number-pill.red {
+  color: var(--red-line);
+  background-color: var(--red-line-bg);
+}
+
+.tram-number-pill.green {
+  color: var(--green-line);
+  background-color: var(--green-line-bg);
+}
+
+.tram-result-main {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tram-result-title,
+.tram-result-subtitle {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tram-result-title {
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.tram-result-subtitle {
+  color: var(--text-secondary);
+  font-size: 0.72rem;
+}
+
+.tram-current-state {
+  color: var(--text-secondary);
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.tram-empty-state {
+  color: var(--text-secondary);
+  font-size: 0.84rem;
+  padding: 18px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-align: center;
+}
+
+/* Fast Line Selector Buttons */
+.line-selector-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.btn-line-select {
+  background-color: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 10px;
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: var(--transition-smooth);
+}
+
+.btn-line-select:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.red-dot { background-color: var(--red-line); box-shadow: 0 0 8px var(--red-line); }
+.green-dot { background-color: var(--green-line); box-shadow: 0 0 8px var(--green-line); }
+
+/* 7. Stop Departures Board
+   ========================================================================== */
+.departures-panel {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;         /* don't compress, scroll sidebar instead */
+}
+
+/* When populated, cap height so the panel doesn't dominate the sidebar, scrolling its list internally */
+.departures-panel.has-stop {
+  max-height: 280px;
+  overflow: hidden;
+}
+
+/* Empty State */
+.departures-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  height: 100%;
+  padding: 20px;
+  color: var(--text-secondary);
+}
+
+.pulse-icon {
+  font-size: 2.5rem;
+  color: var(--text-secondary);
+  opacity: 0.6;
+  margin-bottom: 16px;
+  animation: marker-pulse 2s infinite ease-in-out;
+}
+
+.departures-empty-state h3 {
+  font-size: 1.1rem;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+
+.departures-empty-state p {
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+/* Populated State Details */
+.departures-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: 12px;
+}
+
+.station-meta-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.station-meta-header h3 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.station-code-badge {
+  font-family: monospace;
+  font-size: 0.8rem;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--text-secondary);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+  margin-top: 4px;
+  display: inline-block;
+}
+
+.fly-to-btn {
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 8px;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.fly-to-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: var(--border-color-focus);
+}
+
+/* Station Features badges */
+.station-features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 5px;
+}
+
+.feature-item {
+  font-size: 0.75rem;
+  background-color: rgba(88, 166, 255, 0.1);
+  border: 1px solid rgba(88, 166, 255, 0.2);
+  color: #58a6ff;
+  padding: 4px 8px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Tabs */
+.departure-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 10px;
+  padding: 4px;
+  border: 1px solid var(--border-color);
+}
+
+.tab-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 8px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: var(--transition-smooth);
+  text-align: center;
+}
+
+.tab-btn.active {
+  background-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+/* Departures Timetable Rows */
+.departures-list-wrapper {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  position: relative;
+}
+
+.timetable-list {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.timetable-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 6px 10px;
+  transition: var(--transition-smooth);
+}
+
+.timetable-row:hover {
+  background-color: rgba(255, 255, 255, 0.02);
+  border-color: rgba(139, 148, 158, 0.2);
+}
+
+.train-dest-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.train-dest-icon {
+  font-size: 1.1rem;
+}
+
+.train-dest-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.train-eta-info {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.train-eta-val {
+  font-size: 1.1rem;
+  font-weight: 800;
+  font-family: var(--font-heading);
+}
+
+.train-eta-val.due {
+  color: var(--green-line);
+  animation: eta-due-glow 1.5s infinite alternate;
+}
+
+.train-eta-unit {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+/* Status message states inside departures board */
+.departures-status-msg {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  text-align: center;
+  padding: 30px 10px;
+  gap: 8px;
+}
+
+.departures-status-msg i {
+  font-size: 1.5rem;
+  color: var(--text-muted);
+}
+
+/* ===================================================================
+   8. Line Alert Banners (top-right of map area, floating)
+   =================================================================== */
+.line-alerts-container {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 1010;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;  /* pass clicks through to map */
+}
+
+.line-alert-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  min-width: 200px;
+  max-width: 340px;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+  transition: var(--transition-smooth);
+  pointer-events: auto;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Normal / no-disruption state: calm, low-contrast */
+.line-alert-banner.normal {
+  background-color: rgba(13, 17, 23, 0.72);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+}
+
+.line-alert-banner.normal .status-icon {
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  opacity: 0.55;
+}
+
+/* Disruption state: prominent */
+.line-alert-banner.warning {
+  border: 1px solid currentColor;
+  font-weight: 700;
+}
+
+.line-alert-banner.red.warning {
+  background-color: rgba(255, 40, 40, 0.18);
+  color: #ff8080;
+}
+
+.line-alert-banner.green.warning {
+  background-color: rgba(0, 220, 100, 0.15);
+  color: #55dd90;
+}
+
+.line-alert-banner.warning .status-icon {
+  flex-shrink: 0;
+  animation: alert-pulse 1.4s ease-in-out infinite;
+}
+
+/* Thin left accent bar per line colour */
+.line-alert-banner.red  { border-left: 3px solid var(--red-line);   }
+.line-alert-banner.green { border-left: 3px solid var(--green-line); }
+
+@keyframes alert-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.45; }
+}
+
+/* 9. Leaflet Map Override Styles (Highly customized dark theme)
+   ========================================================================== */
+.map-view-box {
+  width: 100%;
+  height: 100%;
+  background-color: var(--bg-main);
+}
+
+/* Map Floating buttons overlay */
+.map-overlay-controls {
+  position: absolute;
+  bottom: 30px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 1005;
+}
+
+.map-floating-btn {
+  width: 44px;
+  height: 44px;
+  background-color: rgba(13, 17, 23, 0.85);
+  backdrop-filter: blur(var(--blur-amount));
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  color: var(--text-primary);
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+  transition: var(--transition-smooth);
+}
+
+.map-floating-btn:hover {
+  background-color: var(--bg-card-hover);
+  border-color: var(--border-color-focus);
+}
+
+.map-floating-btn.active {
+  color: #58a6ff;
+  border-color: #58a6ff;
+}
+
+/* Leaflet Zoom control override */
+.leaflet-control-zoom {
+  border: 1px solid var(--border-color) !important;
+  box-shadow: var(--shadow-premium) !important;
+  margin-top: 80px !important; /* Move zoom control down to make room for ticker */
+}
+
+.leaflet-control-zoom a {
+  background-color: rgba(22, 27, 34, 0.9) !important;
+  color: var(--text-primary) !important;
+  border-bottom: 1px solid var(--border-color) !important;
+}
+
+.leaflet-control-zoom a:hover {
+  background-color: var(--bg-card-hover) !important;
+}
+
+/* Map Popups and Attribution Override */
+.leaflet-popup-content-wrapper {
+  background-color: rgba(13, 17, 23, 0.9) !important;
+  backdrop-filter: blur(var(--blur-amount));
+  border: 1px solid var(--border-color);
+  border-radius: 10px !important;
+  color: var(--text-primary) !important;
+  box-shadow: var(--shadow-premium) !important;
+}
+
+.leaflet-popup-tip {
+  background-color: rgba(13, 17, 23, 0.9) !important;
+  border-left: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.leaflet-container a.leaflet-popup-close-button {
+  color: var(--text-secondary) !important;
+  padding: 8px !important;
+}
+
+.leaflet-control-attribution {
+  background-color: rgba(13, 17, 23, 0.8) !important;
+  color: var(--text-secondary) !important;
+  border-radius: 5px 0 0 0;
+  border-top: 1px solid var(--border-color);
+  border-left: 1px solid var(--border-color);
+}
+
+/* Custom Marker Styling (Stop Markers & Trams) */
+
+/* Normal station dot */
+.luas-stop-marker {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.9);
+  border: 2px solid transparent;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.6);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.luas-stop-marker.red-stop {
+  background-color: var(--red-line);
+  border-color: rgba(255, 77, 77, 0.5);
+  box-shadow: 0 0 5px var(--red-line-glow);
+}
+
+.luas-stop-marker.green-stop {
+  background-color: var(--green-line);
+  border-color: rgba(0, 230, 118, 0.5);
+  box-shadow: 0 0 5px var(--green-line-glow);
+}
+
+/*
+ * Selected stop: white centre dot + thick coloured ring
+ * We achieve this by keeping background-color white and
+ * using a fat border in the line colour + an outer glow.
+ */
+.luas-stop-marker.selected-stop {
+  width: 18px;
+  height: 18px;
+  background-color: #ffffff !important;
+  border-width: 3px;
+  border-style: solid;
+  box-shadow: 0 0 12px 3px currentColor, 0 0 0 2px rgba(255,255,255,0.15);
+  z-index: 9999;
+}
+
+.luas-stop-marker.red-stop.selected-stop   { border-color: var(--red-line);   color: var(--red-line); }
+.luas-stop-marker.green-stop.selected-stop { border-color: var(--green-line); color: var(--green-line); }
+
+/* Hover glow */
+.luas-stop-marker:hover {
+  filter: brightness(1.5) saturate(1.2);
+}
+
+/* Custom Live Tram indicator Icon on map */
+.luas-tram-icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.luas-tram-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.6);
+  position: relative;
+  transition: transform 0.5s ease; /* Smooth rotation changes */
+}
+
+.luas-tram-icon.red-tram {
+  background-color: var(--red-line);
+  border: 2px solid #ffffff;
+  color: #ffffff;
+  box-shadow: 0 0 12px var(--red-line);
+}
+
+.luas-tram-icon.green-tram {
+  background-color: var(--green-line);
+  border: 2px solid #ffffff;
+  color: #ffffff;
+  box-shadow: 0 0 12px var(--green-line);
+}
+
+/* Pulsing radar rings behind trams */
+.luas-tram-icon::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  animation: tram-pulse 2s infinite linear;
+  z-index: -1;
+}
+
+.luas-tram-icon.red-tram::before { border: 2px solid var(--red-line); }
+.luas-tram-icon.green-tram::before { border: 2px solid var(--green-line); }
+
+.luas-tram-icon i {
+  font-size: 0.75rem;
+  /*
+   * fa-arrow-up points North = 0°. getHeading() returns clockwise-from-North
+   * bearing. Rotating the PARENT div by `heading` degrees is sufficient.
+   * NO extra offset here — removing the old -45deg that caused the 45° error.
+   */
+}
+
+/* 10. Keyframes & Animations
+   ========================================================================== */
+@keyframes marker-pulse {
+  0% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.6; }
+}
+
+@keyframes tram-pulse {
+  0% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+
+@keyframes eta-due-glow {
+  0% { text-shadow: 0 0 4px rgba(0, 230, 118, 0.2); }
+  100% { text-shadow: 0 0 12px rgba(0, 230, 118, 0.7); }
+}
+
+/* 11. Custom Scrollbars
+   ========================================================================== */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0,0,0,0.1);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.1);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,255,255,0.25);
+}
+
+/* 12. Media Queries & Responsive Layout
+   ========================================================================== */
+@media (max-width: 900px) {
+  .app-container {
+    flex-direction: column-reverse;
+  }
+  
+  .sidebar-panel {
+    width: 100%;
+    height: 50%;
+    min-height: 320px;
+    border-right: none;
+    border-top: 1px solid var(--border-color);
+    overflow-y: auto;
+  }
+  
+  .line-alerts-container {
+    top: 10px;
+    right: 10px;
+  }
+  
+  .leaflet-control-zoom {
+    margin-top: 10px !important;
+  }
+}
+
+
+/* Active Line Filters */
+.btn-line-select.active-filter.red-line-theme {
+  background-color: var(--red-line-bg);
+  border-color: var(--red-line);
+  box-shadow: 0 0 10px rgba(255, 77, 77, 0.2);
+}
+
+.btn-line-select.active-filter.green-line-theme {
+  background-color: var(--green-line-bg);
+  border-color: var(--green-line);
+  box-shadow: 0 0 10px rgba(0, 230, 118, 0.2);
+}
+
+/* Station Alert Boxes */
+.station-alert-box {
+  background-color: rgba(255, 77, 77, 0.12);
+  border: 1px solid var(--red-line);
+  color: #ff9e9e;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 0.82rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  line-height: 1.4;
+}
+
+.station-alert-box.info-alert {
+  background-color: rgba(88, 166, 255, 0.1);
+  border: 1px solid #58a6ff;
+  color: #a5d6ff;
+}
+

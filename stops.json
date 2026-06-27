@@ -1,0 +1,609 @@
+{
+  "Luas Red Line": [
+    {
+      "abbrev": "TPT",
+      "isParkRide": false,
+      "isCycleRide": false,
+      "lat": 53.34835,
+      "lng": -6.22925833333333,
+      "pronunciation": "The Point",
+      "name": "The Point"
+    },
+    {
+      "abbrev": "SDK",
+      "isParkRide": false,
+      "isCycleRide": false,
+      "lat": 53.3488222222222,
+      "lng": -6.23714722222222,
+      "pronunciation": "Spencer Dock",
+      "name": "Spencer Dock"
+    },
+    {
+      "abbrev": "MYS",
+      "isParkRide": false,
+      "isCycleRide": false,
+      "lat": 53.3492472222222,
+      "lng": -6.24339444444444,
+      "pronunciation": "Mayor Square - NCI",
+      "name": "Mayor Square - NCI"
+    },
+    {
+      "abbrev": "GDK",
+      "isParkRide": false,
+      "isCycleRide": false,
+      "lat": 53.349528,
+      "lng": -6.247575,
+      "pronunciation": "George's Dock",
+      "name": "George's Dock"
+    },
+    {
+      "abbrev": "CON",
+      "isParkRide": false,
+      "isCycleRide": true,
+      "lat": 53.3509222222222,
+      "lng": -6.24994166666667,
+      "pronunciation": "Connolly",
+      "name": "Connolly"
+    },
+    {
+      "abbrev": "BUS",
+      "isParkRide": false,
+      "isCycleRide": false,
+      "lat": 53.350075,
+      "lng": -6.25145,
+      "pronunciation": "Busáras",
+      "name": "Busáras"
+    },
+    {
+      "abbrev": "ABB",
+      "isParkRide": false,
+      "isCycleRide": true,
+      "lat": 53.3485888888889,
+      "lng": -6.25817222222222,
+      "pronunciation": "Abbey Street",
+      "name": "Abbey Street"
+    },
+    {
+      "abbrev": "JER",
+      "isParkRide": false,
+      "isCycleRide": true,
+      "lat": 53.3476861111111,
+      "lng": -6.26533333333333,
+      "pronunciation": "Jervis",
+      "name": "Jervis"
+    },
+    {
+      "abbrev": "FOU",
+      "isParkRide": false,
+      "isCycleRide": false,
+      "lat": 53.3468638888889,
+      "lng": -6.27343611111111,
+      "pronunciation": "Four Courts",
+      "name": "Four Courts"
+    },
+    {
+      "abbrev": "SMI",
+      "isParkRide": false,
+      "isCycleRide": true,
+      "lat": 53.3471333333333,
+      "lng": -6.27772777777778,
+      "pronunciation": "Smithfield",
+      "name": "Smithfield"
+    },
+    {
+      "abbrev": "MUS",
+      "isParkRide": false,
+      "isCycleRide": false,
+      "lat": 53.3478666666667,
+      "lng": -6.28671388888889,
+      "pronunciation": "Museum",
+      "name": "Museum"
+    },
+    {
+      "abbrev": "HEU",
+      "isParkRide": false,
+      "isCycleRide": true,
+      "lat": 53.3466472222222,
+      "lng": -6.29180833333333,
+      "pronunciation": "Heuston",
+      "name": "Heuston"
+    },
+    {
+      "abbrev": "JAM",
+      "isParkRide": false,
+      "isCycleRide": false,
+      "lat": 53.3419416666667,
+      "lng": -6.29336111111111,
+      "pronunciation": "James's",
+      "name": "James's"
+    },
+    {
+      "abbrev": "FAT",
+      "isParkRide": false,
+      "isCycleRide": true,
+      "lat": 53.3384388888889,
+      "lng": -6.29254722222222,
+      "pronunciation": "Fatima",
+      "name": "Fatima"
+    },
+    {
+      "abbrev": "RIA",
+      "isParkRide": false,
+      "isCycleRide": false,
+      "lat": 53.3379083333333,
+      "lng": -6.29724166666667,
+      "pronunciation": "Rialto",
+      "name": "Rialto"
+    },
+    {
+      "abbrev": "SUI",
+      "isParkRide": false,
+      "isCycleRide": true,
+      "lat": 53.3366166666667,
+      "lng": -6.30721111111111,
+      "pronunciation": "Suir Road",
+      "name": "Suir Road"
+    },
+    {
+      "abbrev": "GOL",
+      "isParkRide": false,
+      "isCycleRide": true,
+      "lat": 53.3358916666667,
+      "lng": -6.31356944444444,
+      "pronunciation": "Goldenbridge",
+      "name": "Goldenbridge"
+    },
+    {
+      "abbrev": "DRI",
+      "isParkRide": false,
+      "isCycleRide": false,
+      "lat": 53.3353611111111,
+      "lng": -6.31816111111111,
+      "pronunciation": "Drimnagh",
+      "name": "Drimnagh"
+    },
+    {
+      "abbrev": "BLA",
+      "isParkRide": false,
+      "isCycleRide": false,
+      "lat": 53.3342583333333,
+      "lng": -6.32739444444444,
+      "pronunciation": "Blackhorse",
+      "name": "Blackhorse"
+    },
+    {
+      "abbrev": "BLU",
+      "isParkRide": false,
+      "isCycleRide": true,
+      "lat": 53.3292972222222,
+      "lng": -6.33379166666667,
+      "pronunciation": "Bluebell",
+      "name": "Bluebell"
+    },
+    {
+      "abbrev": "KYL",
+      "isParkRide": false,
+      "isCycleRide": false,
+      "lat": 53.3266555555556,
+      "lng": -6.34344444444444,
+      "pronunciation": "Kylemore",
+      "name": "Kylemore"
+    },
+    {
+      "abbrev": "RED",
+      "isParkRide": true,
+      "isCycleRide": true,
+      "lat": 53.3168333333333,
+      "lng": -6.36987222222222,
+      "pronunciation": "Red Cow",
+      "name": "Red Cow"
+    },
+    {
+      "abbrev": "KIN",
+      "isParkRide": false,
+      "isCycleRide": true,
+      "lat": 53.3036944444444,
+      "lng": -6.36525,
+      "pronunciation": "Kingswood",
+      "name": "Kingswood"
+    },
+    {
+      "abbrev": "BEL",
+      "isParkRide": false,
+      "isCycleRide": true,
+      "lat": 53.2992861111111,
+      "lng": -6.37488611111111,
+      "pronunciation": "Belgard",
+      "name": "Belgard"
+    },
+    {
+      "abbrev": "COO",
+      "isParkRide": false,
+      "isCycleRide": true,
+      "lat": 53.2935055555556,
+      "lng": -6.38439722222222,
+      "pronunciation": "Cookstown",
+      "name": "Cookstown"
+    },
+    {
+      "abbrev": "HOS",
+      "isParkRide": false,
+      "isCycleRide": false,
+      "lat": 53.2893694444444,
+      "lng": -6.37885,
+      "pronunciation": "Hospital",
+      "name": "Hospital"
+    },
+    {
+      "abbrev": "TAL",
+      "isParkRide": true,
+      "isCycleRide": true,
+      "lat": 53.2874944444444,
+      "lng": -6.37458888888889,
+      "pronunciation": "Tallaght",
+      "name": "Tallaght"
+    },
+    {
+      "abbrev": "FET",
+      "isParkRide": false,
+      "isCycleRide": true,
+      "lat": 53.29351885,
+      "lng": -6.395553516667,
+      "pronunciation": "Fettercairn",
+      "name": "Fettercairn"
+    },
+    {
+      "abbrev": "CVN",
+      "isParkRide": true,
+      "isCycleRide": true,
+      "lat": 53.290982416667,
+      "lng": -6.4068485,
+      "pronunciation": "Cheeverstown",
+      "name": "Cheeverstown"
+    },
+    {
+      "abbrev": "CIT",
+      "isParkRide": false,
+      "isCycleRide": true,
+      "lat": 53.28783255,
+      "lng": -6.418914583333,
+      "pronunciation": "Citywest Campus",
+      "name": "Citywest Campus"
+    },
+    {
+      "abbrev": "FOR",
+      "isParkRide": false,
+      "isCycleRide": true,
+      "lat": 53.284250633333,
+      "lng": -6.42460165,
+      "pronunciation": "Fortunestown",
+      "name": "Fortunestown"
+    },
+    {
+      "abbrev": "SAG",
+      "isParkRide": false,
+      "isCycleRide": true,
+      "lat": 53.28467885,
+      "lng": -6.43776255,
+      "pronunciation": "Saggart",
+      "name": "Saggart"
+    }
+  ],
+  "Luas Green Line": [
+    {
+      "abbrev": "BRO",
+      "isParkRide": false,
+      "isCycleRide": false,
+      "lat": 53.37223956,
+      "lng": -6.29768465,
+      "pronunciation": "Broombridge",
+      "name": "Broombridge"
+    },
+    {
+      "abbrev": "CAB",
+      "isParkRide": false,
+      "isCycleRide": false,
+      "lat": 53.36433419,
+      "lng": -6.28196899,
+      "pronunciation": "Cabra",
+      "name": "Cabra"
+    },
+    {
+      "abbrev": "PHI",
+      "isParkRide": false,
+      "isCycleRide": false,
+      "lat": 53.36037646,
+      "lng": -6.27888498,
+      "pronunciation": "Phibsborough",
+      "name": "Phibsborough"
+    },
+    {
+      "abbrev": "GRA",
+      "isParkRide": false,
+      "isCycleRide": false,
+      "lat": 53.35719205,
+      "lng": -6.27733848,
+      "pronunciation": "Grangegorman",
+      "name": "Grangegorman"
+    },
+    {
+      "abbrev": "BRD",
+      "isParkRide": false,
+      "isCycleRide": false,
+      "lat": 53.35407442,
+      "lng": -6.27375642,
+      "pronunciation": "Broadstone - University",
+      "name": "Broadstone - University"
+    },
+    {
+      "abbrev": "DOM",
+      "isParkRide": false,
+      "isCycleRide": false,
+      "lat": 53.3513492,
+      "lng": -6.26554234,
+      "pronunciation": "Dominick",
+      "name": "Dominick"
+    },
+    {
+      "abbrev": "PAR",
+      "isParkRide": false,
+      "isCycleRide": false,
+      "lat": 53.35310356,
+      "lng": -6.26050153,
+      "pronunciation": "Parnell",
+      "name": "Parnell"
+    },
+    {
+      "abbrev": "OUP",
+      "isParkRide": false,
+      "isCycleRide": false,
+      "lat": 53.35161218,
+      "lng": -6.26102943,
+      "pronunciation": "O'Connell - Upper",
+      "name": "O'Connell - Upper"
+    },
+    {
+      "abbrev": "OGP",
+      "isParkRide": false,
+      "isCycleRide": false,
+      "lat": 53.34884509,
+      "lng": -6.25988168,
+      "pronunciation": "O'Connell - GPO",
+      "name": "O'Connell - GPO"
+    },
+    {
+      "abbrev": "MAR",
+      "isParkRide": false,
+      "isCycleRide": false,
+      "lat": 53.34924219,
+      "lng": -6.25773649,
+      "pronunciation": "Marlborough",
+      "name": "Marlborough"
+    },
+    {
+      "abbrev": "WES",
+      "isParkRide": false,
+      "isCycleRide": false,
+      "lat": 53.34635626,
+      "lng": -6.25897083,
+      "pronunciation": "Westmoreland",
+      "name": "Westmoreland"
+    },
+    {
+      "abbrev": "TRY",
+      "isParkRide": false,
+      "isCycleRide": false,
+      "lat": 53.34528172,
+      "lng": -6.25825674,
+      "pronunciation": "Trinity",
+      "name": "Trinity"
+    },
+    {
+      "abbrev": "DAW",
+      "isParkRide": false,
+      "isCycleRide": false,
+      "lat": 53.34216927,
+      "lng": -6.25796366,
+      "pronunciation": "Dawson",
+      "name": "Dawson"
+    },
+    {
+      "abbrev": "STS",
+      "isParkRide": false,
+      "isCycleRide": false,
+      "lat": 53.3390722222222,
+      "lng": -6.26133333333333,
+      "pronunciation": "St. Stephen's Green",
+      "name": "St. Stephen's Green"
+    },
+    {
+      "abbrev": "HAR",
+      "isParkRide": false,
+      "isCycleRide": true,
+      "lat": 53.3333583333333,
+      "lng": -6.26265,
+      "pronunciation": "Harcourt",
+      "name": "Harcourt"
+    },
+    {
+      "abbrev": "CHA",
+      "isParkRide": false,
+      "isCycleRide": true,
+      "lat": 53.3306694444444,
+      "lng": -6.25868333333333,
+      "pronunciation": "Charlemont",
+      "name": "Charlemont"
+    },
+    {
+      "abbrev": "RAN",
+      "isParkRide": false,
+      "isCycleRide": true,
+      "lat": 53.3264333333333,
+      "lng": -6.25620277777778,
+      "pronunciation": "Ranelagh",
+      "name": "Ranelagh"
+    },
+    {
+      "abbrev": "BEE",
+      "isParkRide": false,
+      "isCycleRide": true,
+      "lat": 53.3208222222222,
+      "lng": -6.25465277777778,
+      "pronunciation": "Beechwood",
+      "name": "Beechwood"
+    },
+    {
+      "abbrev": "COW",
+      "isParkRide": false,
+      "isCycleRide": true,
+      "lat": 53.3164666666667,
+      "lng": -6.25344722222222,
+      "pronunciation": "Cowper",
+      "name": "Cowper"
+    },
+    {
+      "abbrev": "MIL",
+      "isParkRide": false,
+      "isCycleRide": true,
+      "lat": 53.3099166666667,
+      "lng": -6.25172777777778,
+      "pronunciation": "Milltown",
+      "name": "Milltown"
+    },
+    {
+      "abbrev": "WIN",
+      "isParkRide": false,
+      "isCycleRide": true,
+      "lat": 53.3015583333333,
+      "lng": -6.25070833333333,
+      "pronunciation": "Windy Arbour",
+      "name": "Windy Arbour"
+    },
+    {
+      "abbrev": "DUN",
+      "isParkRide": false,
+      "isCycleRide": true,
+      "lat": 53.2923583333333,
+      "lng": -6.24511666666667,
+      "pronunciation": "Dundrum",
+      "name": "Dundrum"
+    },
+    {
+      "abbrev": "BAL",
+      "isParkRide": true,
+      "isCycleRide": true,
+      "lat": 53.2861055555556,
+      "lng": -6.23677222222222,
+      "pronunciation": "Balally",
+      "name": "Balally"
+    },
+    {
+      "abbrev": "KIL",
+      "isParkRide": false,
+      "isCycleRide": true,
+      "lat": 53.2830083333333,
+      "lng": -6.22388611111111,
+      "pronunciation": "Kilmacud",
+      "name": "Kilmacud"
+    },
+    {
+      "abbrev": "STI",
+      "isParkRide": true,
+      "isCycleRide": true,
+      "lat": 53.2793111111111,
+      "lng": -6.20991944444444,
+      "pronunciation": "Stillorgan",
+      "name": "Stillorgan"
+    },
+    {
+      "abbrev": "SAN",
+      "isParkRide": true,
+      "isCycleRide": true,
+      "lat": 53.2776027777778,
+      "lng": -6.20467777777778,
+      "pronunciation": "Sandyford",
+      "name": "Sandyford"
+    },
+    {
+      "abbrev": "CPK",
+      "isParkRide": false,
+      "isCycleRide": false,
+      "lat": 53.27015,
+      "lng": -6.20376388888889,
+      "pronunciation": "Central Park",
+      "name": "Central Park"
+    },
+    {
+      "abbrev": "GLE",
+      "isParkRide": false,
+      "isCycleRide": true,
+      "lat": 53.2663361111111,
+      "lng": -6.20994166666667,
+      "pronunciation": "Glencairn",
+      "name": "Glencairn"
+    },
+    {
+      "abbrev": "GAL",
+      "isParkRide": false,
+      "isCycleRide": true,
+      "lat": 53.2611638888889,
+      "lng": -6.20602222222222,
+      "pronunciation": "The Gallops",
+      "name": "The Gallops"
+    },
+    {
+      "abbrev": "LEO",
+      "isParkRide": false,
+      "isCycleRide": true,
+      "lat": 53.2582472222222,
+      "lng": -6.19836111111111,
+      "pronunciation": "Leopardstown Valley",
+      "name": "Leopardstown Valley"
+    },
+    {
+      "abbrev": "BAW",
+      "isParkRide": false,
+      "isCycleRide": false,
+      "lat": 53.255047,
+      "lng": -6.184475,
+      "pronunciation": "Ballyogan Wood",
+      "name": "Ballyogan Wood"
+    },
+    {
+      "abbrev": "CCK",
+      "isParkRide": false,
+      "isCycleRide": true,
+      "lat": 53.2540333333333,
+      "lng": -6.16990833333333,
+      "pronunciation": "Carrickmines",
+      "name": "Carrickmines"
+    },
+    {
+      "abbrev": "LAU",
+      "isParkRide": false,
+      "isCycleRide": false,
+      "lat": 53.2506055555556,
+      "lng": -6.15500555555556,
+      "pronunciation": "Laughanstown",
+      "name": "Laughanstown"
+    },
+    {
+      "abbrev": "CHE",
+      "isParkRide": false,
+      "isCycleRide": false,
+      "lat": 53.2453333333333,
+      "lng": -6.14585277777778,
+      "pronunciation": "Cherrywood",
+      "name": "Cherrywood"
+    },
+    {
+      "abbrev": "BRI",
+      "isParkRide": false,
+      "isCycleRide": false,
+      "lat": 53.242075,
+      "lng": -6.14288611111111,
+      "pronunciation": "Brides Glen",
+      "name": "Brides Glen"
+    }
+  ]
+}

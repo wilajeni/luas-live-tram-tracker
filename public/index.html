@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Luas Live Tram Tracker - Dublin Real-Time Transit Map</title>
+  <meta name="description" content="Track Dublin Luas trams in real-time on our interactive map. View arrival forecasts, schedules, and active service alerts for Red and Green lines stop-by-stop.">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Leaflet Map CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  
+  <!-- Custom Styling -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Main Grid App Layout -->
+  <div class="app-container" id="app-root">
+    
+    <!-- Left Sidebar: Controls, Stops Search, & Station Timetable -->
+    <aside class="sidebar-panel" id="main-sidebar">
+      
+      <!-- App Header -->
+      <header class="app-header">
+        <div class="logo-area">
+          <i class="fa-solid fa-train-tram logo-icon"></i>
+          <h1>Luas Tracker</h1>
+        </div>
+        <p class="app-tagline"> Dublin Tram Live System Map </p>
+      </header>
+
+      <!-- Search and Quick Select Stops -->
+      <section class="search-panel glass-card" id="stops-search-section" style="position:relative">
+        <h2 class="panel-title"><i class="fa-solid fa-magnifying-glass"></i> Station Finder</h2>
+        <div class="search-wrapper">
+          <i class="fa-solid fa-search search-input-icon"></i>
+          <input type="text" id="station-search-input" placeholder="Search stops (e.g. Abbey Street, Dundrum)..." autocomplete="off">
+          <button id="btn-clear-search" class="clear-search-btn" style="display: none;"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        
+        <!-- Suggestions dropdown list -->
+        <ul class="suggestions-list" id="search-suggestions" style="display: none;"></ul>
+
+        <!-- Fast line selectors -->
+        <div class="line-selector-buttons">
+          <button id="btn-select-red-line" class="btn-line-select red-line-theme">
+            <span class="dot red-dot"></span> Red Line
+          </button>
+          <button id="btn-select-green-line" class="btn-line-select green-line-theme">
+            <span class="dot green-dot"></span> Green Line
+          </button>
+        </div>
+      </section>
+
+      <!-- Stop Departures Board -->
+      <section class="departures-panel glass-card" id="station-departures-card">
+        <!-- Default State: No Station Selected -->
+        <div class="departures-empty-state" id="departures-empty-placeholder">
+          <i class="fa-solid fa-location-dot pulse-icon"></i>
+          <h3>No Station Selected</h3>
+          <p>Click a station marker on the map or search above to view real-time arrivals and timetables.</p>
+        </div>
+
+        <!-- Populated State: Station Details and Forecast -->
+        <div class="departures-content" id="departures-real-content" style="display: none;">
+          <div class="station-meta-header" style="align-items: center;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <h3 id="selected-stop-name" style="margin: 0;">Abbey Street</h3>
+              <span id="selected-stop-abbrev" class="station-code-badge" style="margin-top: 0;">ABB</span>
+            </div>
+            <button id="btn-fly-to-stop" class="fly-to-btn" title="Center map on station"><i class="fa-solid fa-crosshairs"></i></button>
+          </div>
+
+          <!-- Station Features (icons showing Park & Ride, Cycle facilities) -->
+          <div class="station-features" id="selected-stop-features">
+            <span class="feature-item" id="feature-park-ride" style="display: none;"><i class="fa-solid fa-square-p"></i> Park & Ride</span>
+            <span class="feature-item" id="feature-cycle" style="display: none;"><i class="fa-solid fa-bicycle"></i> Cycle Parking</span>
+          </div>
+
+
+          <!-- Tabs for Inbound & Outbound boards -->
+          <div class="departure-tabs">
+            <button id="tab-inbound" class="tab-btn active">
+              <span id="inbound-tab-title">Inbound</span>
+            </button>
+            <button id="tab-outbound" class="tab-btn">
+              <span id="outbound-tab-title">Outbound</span>
+            </button>
+          </div>
+
+          <!-- Live Timetable Board -->
+          <div class="departures-list-wrapper">
+            <!-- Loading Indicator -->
+            <div id="departures-loading" class="departures-status-msg" style="display: none;">
+              <i class="fa-solid fa-circle-notch fa-spin"></i> Fetching live schedule...
+            </div>
+            
+            <!-- Table of Departures -->
+            <div class="timetable-list" id="timetable-inbound-list">
+              <!-- Dynamically populated rows -->
+            </div>
+            <div class="timetable-list" id="timetable-outbound-list" style="display: none;">
+              <!-- Dynamically populated rows -->
+            </div>
+            
+            <!-- Empty departures message -->
+            <div id="departures-none-msg" class="departures-status-msg" style="display: none;">
+              <i class="fa-solid fa-triangle-exclamation"></i> No scheduled departures found.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tram Finder -->
+      <section class="tram-finder-panel glass-card" id="tram-finder-section">
+        <div class="panel-title-row">
+          <h2 class="panel-title"><i class="fa-solid fa-train-tram"></i> Tram Finder</h2>
+          <span id="tram-finder-count" class="mini-count-badge">0 live</span>
+        </div>
+        <div class="search-wrapper">
+          <i class="fa-solid fa-hashtag search-input-icon"></i>
+          <input type="text" id="tram-search-input" placeholder="Search tram number (e.g. 5031)..." autocomplete="off">
+          <button id="btn-clear-tram-search" class="clear-search-btn" style="display: none;"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="tram-finder-meta" id="tram-finder-last-updated">Waiting for AVLS feed...</div>
+        <div class="tram-line-tabs">
+          <button id="tram-filter-all" class="tram-filter-btn active">All</button>
+          <button id="tram-filter-red" class="tram-filter-btn"><span class="dot red-dot"></span> Red</button>
+          <button id="tram-filter-green" class="tram-filter-btn"><span class="dot green-dot"></span> Green</button>
+        </div>
+        <div class="tram-results-list" id="tram-results-list">
+          <div class="tram-empty-state">
+            <i class="fa-solid fa-circle-notch fa-spin"></i>
+            Loading tram list...
+          </div>
+        </div>
+      </section>
+
+      <!-- System Mode & Status Control Panel -->
+      <section class="control-panel glass-card local-only" id="mode-controls">
+        <h2 class="panel-title"><i class="fa-solid fa-sliders"></i> System Diagnostics</h2>
+        <div class="status-indicator-group">
+          <div class="status-row">
+            <span class="status-label">Network API:</span>
+            <span id="api-status-badge" class="badge badge-disconnected">Checking...</span>
+          </div>
+          <div class="status-row">
+            <span class="status-label">Mode:</span>
+            <span id="mode-status-badge" class="badge badge-sim">Simulation</span>
+          </div>
+        </div>
+        
+        <div class="mode-switch-group">
+          <button id="btn-mode-auto" class="btn-mode active" title="Automatically fall back to simulation if API is disconnected or has no active trains">Auto-Detect</button>
+          <button id="btn-mode-live" class="btn-mode" title="Force connection to the live Luas API">Force Live</button>
+          <button id="btn-mode-sim" class="btn-mode" title="Force simulated timetable simulation">Force Sim</button>
+        </div>
+      </section>
+      
+    </aside>
+
+    <!-- Right Side: Header Ticker & Full Screen Map -->
+    <main class="main-map-panel" id="map-panel-root">
+      
+      <!-- Top Network Alerts -->
+      <section class="line-alerts-container" id="line-alerts">
+        <div class="line-alert-banner red" id="red-line-alert">
+          <i class="fa-solid fa-circle-notch fa-spin"></i>
+          <span>Checking Red Line...</span>
+        </div>
+        <div class="line-alert-banner green" id="green-line-alert">
+          <i class="fa-solid fa-circle-notch fa-spin"></i>
+          <span>Checking Green Line...</span>
+        </div>
+      </section>
+
+      <!-- Map Container -->
+      <div id="live-map-container" class="map-view-box"></div>
+      
+      <!-- Floating Map Controls (Zoom reset, Layer toggles) -->
+      <div class="map-overlay-controls">
+        <button id="btn-reset-view" class="map-floating-btn" title="Reset view to full Dublin area"><i class="fa-solid fa-globe"></i></button>
+        <button id="btn-toggle-trams" class="map-floating-btn active" title="Toggle active tram markers"><i class="fa-solid fa-train"></i></button>
+      </div>
+
+    </main>
+
+  </div>
+
+  <!-- Leaflet Map JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <!-- Client JavaScript -->
+  <script src="app.js"></script>
+</body>
+</html>

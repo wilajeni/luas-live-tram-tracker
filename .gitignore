@@ -1,0 +1,5 @@
+node_modules/
+*.log
+.gemini/
+.agents/
+vehicle_history.json
