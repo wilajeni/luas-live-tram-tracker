@@ -186,20 +186,21 @@ function drawTracks() {
       }
       
       if (coords && coords.length > 0) {
-        // Glowing track outline
+        // Base route path (thin solid line)
         L.polyline(coords, {
-          color: colorGlow,
-          weight: 8,
-          opacity: 0.15,
+          color: cssColor,
+          weight: 4.5,
+          opacity: 0.25,
           lineCap: 'round',
           lineJoin: 'round'
         }).addTo(map);
 
-        // Core track line
+        // Dashed railway pattern line (lighter and transparent)
         L.polyline(coords, {
           color: cssColor,
-          weight: 3.5,
-          opacity: 0.85,
+          weight: 3.0,
+          opacity: 0.5,
+          dashArray: '5, 8',
           lineCap: 'round',
           lineJoin: 'round'
         }).addTo(map);
