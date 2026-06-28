@@ -248,10 +248,13 @@ function getAVLSForecastForStop(stopAbbrev) {
     const dueMins = normalizeDueMins(sighting.dueMins);
     if (dueMins === null) return;
 
+    const finalDue = dueMins <= 0.5 ? 0.5 : Math.round(dueMins);
+    const etaDate = new Date(Date.now() + finalDue * 60000);
     trams.push({
       direction: sighting.direction,
       destination: sighting.destination,
-      dueMins: dueMins <= 0.5 ? 0.5 : Math.round(dueMins),
+      dueMins: finalDue,
+      eta: etaDate.toTimeString().slice(0, 5),
       vehicleNumber: vehicle.tramNumber,
       source: 'avls'
     });
@@ -311,13 +314,15 @@ function parseXMLForecast(xmlString) {
     stopName: '',
     stopAbv: '',
     message: '',
+    created: '',
     trams: []
   };
 
-  const stopInfoMatch = xmlString.match(/<stopInfo created="[^"]+" stop="([^"]+)" stopAbv="([^"]+)"/);
+  const stopInfoMatch = xmlString.match(/<stopInfo created="([^"]+)" stop="([^"]+)" stopAbv="([^"]+)"/);
   if (stopInfoMatch) {
-    result.stopName = stopInfoMatch[1];
-    result.stopAbv = stopInfoMatch[2];
+    result.created = stopInfoMatch[1];
+    result.stopName = stopInfoMatch[2];
+    result.stopAbv = stopInfoMatch[3];
   }
 
   const messageMatch = xmlString.match(/<message>([^<]*)<\/message>/);
@@ -349,10 +354,22 @@ function parseXMLForecast(xmlString) {
       }
 
       if (dueMinutes !== null) {
+        // Compute ETA from created timestamp + dueMins
+        let eta = '';
+        if (result.created) {
+          try {
+            const createdDate = new Date(result.created);
+            if (!isNaN(createdDate.getTime())) {
+              const etaDate = new Date(createdDate.getTime() + dueMinutes * 60000);
+              eta = etaDate.toTimeString().slice(0, 5); // "HH:MM"
+            }
+          } catch (e) { /* ignore parse errors */ }
+        }
         result.trams.push({
-          direction: direction, // 'Inbound' or 'Outbound'
+          direction: direction,
           destination: dest,
-          dueMins: dueMinutes
+          dueMins: dueMinutes,
+          eta: eta
         });
       }
     }
@@ -752,10 +769,13 @@ function getSimulatedForecast(stopAbv) {
       }
 
       const dueMins = remainingSeconds / 60;
+      const finalDue = dueMins <= 0.5 ? 0.5 : Math.round(dueMins);
+      const etaDate = new Date(Date.now() + finalDue * 60000);
       result.trams.push({
         direction: tram.direction,
         destination: tram.destination,
-        dueMins: dueMins <= 0.5 ? 0.5 : Math.round(dueMins)
+        dueMins: finalDue,
+        eta: etaDate.toTimeString().slice(0, 5)
       });
     }
   });

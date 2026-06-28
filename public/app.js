@@ -599,6 +599,8 @@ function populateTimetableList(elementId, trams, lineTheme) {
     const isDue = typeof tram.dueMins === 'string' && tram.dueMins.toUpperCase() === 'DUE' || tram.dueMins === 0.5 || tram.dueMins <= 0;
     const minutesDisplay = isDue ? 'DUE' : Math.round(tram.dueMins);
 
+    const etaDisplay = tram.eta ? `<span class="train-eta-clock">${tram.eta}</span>` : '';
+
     row.innerHTML = `
       <div class="train-dest-info">
         <i class="fa-solid fa-train-tram train-dest-icon" style="color:${lineTheme === 'Red' ? 'var(--red-line)' : 'var(--green-line)'}"></i>
@@ -607,6 +609,7 @@ function populateTimetableList(elementId, trams, lineTheme) {
       <div class="train-eta-info">
         <span class="train-eta-val ${isDue ? 'due' : ''}">${minutesDisplay}</span>
         ${isDue ? '' : '<span class="train-eta-unit">min</span>'}
+        ${etaDisplay}
       </div>
     `;
     container.appendChild(row);

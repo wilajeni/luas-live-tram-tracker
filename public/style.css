@@ -846,6 +846,22 @@ body.light-theme .feature-badge {
   color: var(--text-secondary);
 }
 
+.train-eta-clock {
+  font-size: 0.72rem;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  background-color: var(--bg-button-translucent);
+  border: 1px solid var(--border-color);
+  padding: 2px 6px;
+  border-radius: 6px;
+  color: var(--text-secondary);
+  margin-left: 6px;
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
+}
+
 /* Status message states inside departures board */
 .departures-status-msg {
   display: flex;
