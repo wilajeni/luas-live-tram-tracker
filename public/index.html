@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
   <title>Luas Live Tram Tracker - Dublin Real-Time Transit Map</title>
   <meta name="description" content="Track Dublin Luas trams in real-time on our interactive map. View arrival forecasts, schedules, and active service alerts for Red and Green lines stop-by-stop.">
   
@@ -27,6 +27,8 @@
     
     <!-- Left Sidebar: Controls, Stops Search, & Station Timetable -->
     <aside class="sidebar-panel" id="main-sidebar">
+      <!-- Mobile Drag Handle -->
+      <div class="bottom-sheet-drag-handle" id="bottom-sheet-handle"></div>
       
       <!-- App Header -->
       <header class="app-header">
@@ -37,8 +39,16 @@
         <p class="app-tagline"> Dublin Tram Live System Map </p>
       </header>
 
-      <!-- Search and Quick Select Stops -->
-      <section class="search-panel glass-card" id="stops-search-section" style="position:relative">
+      <!-- Sidebar Navigation Tabs -->
+      <div class="sidebar-tabs">
+        <button id="sidebar-tab-station" class="sidebar-tab-btn active"><i class="fa-solid fa-location-dot"></i> Station</button>
+        <button id="sidebar-tab-tram" class="sidebar-tab-btn"><i class="fa-solid fa-train-tram"></i> Tram</button>
+      </div>
+
+      <!-- STATION TAB CONTENT -->
+      <div id="sidebar-tab-content-station" class="sidebar-tab-content active">
+        <!-- Search and Quick Select Stops -->
+        <section class="search-panel glass-card" id="stops-search-section" style="position:relative">
         <h2 class="panel-title"><i class="fa-solid fa-magnifying-glass"></i> Station Finder</h2>
         <div class="search-wrapper">
           <i class="fa-solid fa-search search-input-icon"></i>
@@ -120,7 +130,10 @@
           </div>
         </div>
       </section>
+      </div> <!-- End Station Tab Content -->
 
+      <!-- TRAM TAB CONTENT -->
+      <div id="sidebar-tab-content-tram" class="sidebar-tab-content" style="display: none;">
       <!-- Tram Finder -->
       <section class="tram-finder-panel glass-card" id="tram-finder-section">
         <div class="panel-title-row">
@@ -145,6 +158,7 @@
           </div>
         </div>
       </section>
+      </div> <!-- End Tram Tab Content -->
 
       <!-- System Mode & Status Control Panel -->
       <section class="control-panel glass-card local-only" id="mode-controls">

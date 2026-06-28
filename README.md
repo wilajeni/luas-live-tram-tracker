@@ -1,4 +1,4 @@
-# Luas Live Tram Tracker (v1.0)
+# Luas Live Tram Tracker (v1.2)
 
 An interactive, real-time Dublin Luas tram tracker web application. It displays live tram positions, tracks segments, handles line notifications, and features a clean glassmorphic UI dashboard with search capability, stop departures timetables, and active tram finders.
 
@@ -72,7 +72,13 @@ The backend dynamically estimates the position of trams between stations when li
 
 ## Version History
 
-- **v1.1** (Current)
+- **v1.2** (Current)
+  - Implemented ETA calculation alongside 'Due in' minutes for all active trams.
+  - Replaced straight lines with realistic curved rail tracks between stations.
+  - Updated track styling to use dashed lines with increased transparency for a cleaner aesthetic.
+  - Delivered comprehensive mobile & tablet responsiveness, including a touch-friendly interactive bottom sheet and hardware safe-area adaptations.
+  - Restructured sidebar navigation into distinct Station and Tram tabs.
+- **v1.1**
   - Added full Light Theme support toggled via a floating Sun/Moon button, switching between CartoDB Dark Matter and Positron tiles dynamically.
   - Implemented dynamic departures board tabs (Inbound, Outbound, Terminating) adapting via CSS Grid.
   - Relocated Park & Ride (`P&R`) and Cycle Parking (`CP`) facilities directly to the station title line as compact pills.

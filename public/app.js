@@ -93,6 +93,14 @@ function initMap() {
     maxZoom: 20
   }).addTo(map);
 
+  // Close bottom sheet if map is clicked (mobile)
+  map.on('click', () => {
+    const sidebar = document.getElementById('main-sidebar');
+    if (sidebar && window.innerWidth <= 768) {
+      sidebar.classList.remove('expanded');
+    }
+  });
+
   // Set default view on zoom out
   document.getElementById('btn-reset-view').addEventListener('click', () => {
     map.setView([53.335, -6.26], 12);
@@ -606,6 +614,12 @@ async function fetchStopForecast(abbrev) {
     document.getElementById('departures-none-msg').style.display = 'flex';
     document.getElementById('departures-none-msg').innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> Error loading forecast.`;
   }
+  
+  // Expand mobile bottom sheet automatically when stop is selected
+  const sidebar = document.getElementById('main-sidebar');
+  if (sidebar && window.innerWidth <= 768) {
+    sidebar.classList.add('expanded');
+  }
 }
 
 // Construct dynamic arrival list rows
@@ -670,6 +684,28 @@ function updateDeparturesCountdownLocal() {
 // 8. Search & Filters Event Listeners Setup
 // ==========================================================================
 function setupUIEventListeners() {
+  // Sidebar Tabs Setup
+  const tabStationBtn = document.getElementById('sidebar-tab-station');
+  const tabTramBtn = document.getElementById('sidebar-tab-tram');
+  const contentStation = document.getElementById('sidebar-tab-content-station');
+  const contentTram = document.getElementById('sidebar-tab-content-tram');
+
+  if (tabStationBtn && tabTramBtn) {
+    tabStationBtn.addEventListener('click', () => {
+      tabStationBtn.classList.add('active');
+      tabTramBtn.classList.remove('active');
+      contentStation.style.display = 'flex';
+      contentTram.style.display = 'none';
+    });
+
+    tabTramBtn.addEventListener('click', () => {
+      tabTramBtn.classList.add('active');
+      tabStationBtn.classList.remove('active');
+      contentTram.style.display = 'flex';
+      contentStation.style.display = 'none';
+    });
+  }
+
   const searchInput = document.getElementById('station-search-input');
   const suggestionsBox = document.getElementById('search-suggestions');
   const clearBtn = document.getElementById('btn-clear-search');
@@ -888,4 +924,29 @@ function setupUIEventListeners() {
       tileLayer.setUrl(MAP_TILES_DARK);
     }
   });
+
+  // Mobile Bottom Sheet Toggle Logic
+  const handle = document.getElementById('bottom-sheet-handle');
+  const sidebar = document.getElementById('main-sidebar');
+  if (handle && sidebar) {
+    handle.addEventListener('click', () => {
+      sidebar.classList.toggle('expanded');
+    });
+    
+    // Add simple touch drag up/down logic for the handle
+    let startY = 0;
+    handle.addEventListener('touchstart', (e) => {
+      startY = e.touches[0].clientY;
+    });
+    handle.addEventListener('touchend', (e) => {
+      const endY = e.changedTouches[0].clientY;
+      if (startY - endY > 30) {
+        // swipe up
+        sidebar.classList.add('expanded');
+      } else if (endY - startY > 30) {
+        // swipe down
+        sidebar.classList.remove('expanded');
+      }
+    });
+  }
 }
