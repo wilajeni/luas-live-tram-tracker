@@ -33,12 +33,25 @@ const TRACKS_PATHS = {
   green_north_loop: ['STS', 'DAW', 'WES', 'OGP', 'OUP', 'PAR', 'DOM']
 };
 
+let trackSegments = {};
+
+async function loadTracksGeometry() {
+  try {
+    const response = await fetch('/luas_tracks.json');
+    const data = await response.json();
+    trackSegments = data.segments || {};
+  } catch (error) {
+    console.error('Error loading track segments geometry:', error);
+  }
+}
+
 // 1. Initializer
 // ==========================================================================
 document.addEventListener('DOMContentLoaded', async () => {
   configureLocalOnlyUI();
   initMap();
   await loadStops();
+  await loadTracksGeometry();
   drawTracks();
   setupUIEventListeners();
   
@@ -152,41 +165,57 @@ function renderStopMarkerIcon(abbrev, isRed, selected) {
 // 4. Draw Line Tracks
 // ==========================================================================
 function drawTracks() {
-  // Draw polylines matching Dublin track layout
-  const drawPoly = (abbrevs, colorGlow, cssColor) => {
-    const coords = abbrevs.map(abv => {
-      const s = stopsMap[abv];
-      return s ? [s.lat, s.lng] : null;
-    }).filter(Boolean);
+  // Draw polylines matching realistic Dublin track layout segment-by-segment
+  const drawPathSegments = (abbrevs, colorGlow, cssColor) => {
+    for (let i = 0; i < abbrevs.length - 1; i++) {
+      const sA = abbrevs[i];
+      const sB = abbrevs[i + 1];
+      
+      let coords = trackSegments[`${sA}_${sB}`];
+      if (!coords && trackSegments[`${sB}_${sA}`]) {
+        coords = [...trackSegments[`${sB}_${sA}`]].reverse();
+      }
+      
+      if (!coords) {
+        // Fallback to straight line if segment coords not loaded
+        const stopA = stopsMap[sA];
+        const stopB = stopsMap[sB];
+        if (stopA && stopB) {
+          coords = [[stopA.lat, stopA.lng], [stopB.lat, stopB.lng]];
+        }
+      }
+      
+      if (coords && coords.length > 0) {
+        // Glowing track outline
+        L.polyline(coords, {
+          color: colorGlow,
+          weight: 8,
+          opacity: 0.15,
+          lineCap: 'round',
+          lineJoin: 'round'
+        }).addTo(map);
 
-    // Glowing track outline
-    L.polyline(coords, {
-      color: colorGlow,
-      weight: 8,
-      opacity: 0.15,
-      lineCap: 'round',
-      lineJoin: 'round'
-    }).addTo(map);
-
-    // Core track line
-    L.polyline(coords, {
-      color: cssColor,
-      weight: 3.5,
-      opacity: 0.85,
-      lineCap: 'round',
-      lineJoin: 'round'
-    }).addTo(map);
+        // Core track line
+        L.polyline(coords, {
+          color: cssColor,
+          weight: 3.5,
+          opacity: 0.85,
+          lineCap: 'round',
+          lineJoin: 'round'
+        }).addTo(map);
+      }
+    }
   };
 
   // Red tracks
-  drawPoly(TRACKS_PATHS.red_main, 'var(--red-line)', 'var(--red-line)');
-  drawPoly(TRACKS_PATHS.red_branch_tal, 'var(--red-line)', 'var(--red-line)');
-  drawPoly(TRACKS_PATHS.red_branch_sag, 'var(--red-line)', 'var(--red-line)');
-  drawPoly(TRACKS_PATHS.red_spur_con, 'var(--red-line)', 'var(--red-line)');
+  drawPathSegments(TRACKS_PATHS.red_main, 'var(--red-line)', 'var(--red-line)');
+  drawPathSegments(TRACKS_PATHS.red_branch_tal, 'var(--red-line)', 'var(--red-line)');
+  drawPathSegments(TRACKS_PATHS.red_branch_sag, 'var(--red-line)', 'var(--red-line)');
+  drawPathSegments(TRACKS_PATHS.red_spur_con, 'var(--red-line)', 'var(--red-line)');
 
   // Green tracks
-  drawPoly(TRACKS_PATHS.green_main, 'var(--green-line)', 'var(--green-line)');
-  drawPoly(TRACKS_PATHS.green_north_loop, 'var(--green-line)', 'var(--green-line)');
+  drawPathSegments(TRACKS_PATHS.green_main, 'var(--green-line)', 'var(--green-line)');
+  drawPathSegments(TRACKS_PATHS.green_north_loop, 'var(--green-line)', 'var(--green-line)');
 }
 
 // 5. Poll Trams & Active Position Updates

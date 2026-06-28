@@ -39,6 +39,78 @@ function getDistance(lat1, lon1, lat2, lon2) {
   return R * c;
 }
 
+// Load track segments geometry
+let TRACKS_SEGMENTS = {};
+try {
+  const tracksGeo = JSON.parse(fs.readFileSync(path.join(__dirname, 'public', 'luas_tracks.json')));
+  TRACKS_SEGMENTS = tracksGeo.segments || {};
+  console.log(`Loaded ${Object.keys(TRACKS_SEGMENTS).length} realistic track segments.`);
+} catch (e) {
+  console.warn('Could not load realistic track segments:', e.message);
+}
+
+function getSegmentCoords(fromAbv, toAbv) {
+  if (TRACKS_SEGMENTS[`${fromAbv}_${toAbv}`]) {
+    return TRACKS_SEGMENTS[`${fromAbv}_${toAbv}`];
+  }
+  if (TRACKS_SEGMENTS[`${toAbv}_${fromAbv}`]) {
+    // Reverse coordinates for opposite direction segment
+    return [...TRACKS_SEGMENTS[`${toAbv}_${fromAbv}`]].reverse();
+  }
+  return null;
+}
+
+function interpolateAlongPath(pathCoords, progress) {
+  if (!pathCoords || pathCoords.length === 0) return null;
+  if (pathCoords.length === 1) return pathCoords[0];
+  if (progress <= 0) return pathCoords[0];
+  if (progress >= 1) return pathCoords[pathCoords.length - 1];
+
+  const distances = [0];
+  let totalLength = 0;
+  for (let i = 0; i < pathCoords.length - 1; i++) {
+    const p1 = pathCoords[i];
+    const p2 = pathCoords[i + 1];
+    const dist = getDistance(p1[0], p1[1], p2[0], p2[1]);
+    totalLength += dist;
+    distances.push(totalLength);
+  }
+
+  const targetDist = progress * totalLength;
+
+  for (let i = 0; i < distances.length - 1; i++) {
+    if (targetDist >= distances[i] && targetDist <= distances[i + 1]) {
+      const segLength = distances[i + 1] - distances[i];
+      const segProgress = segLength > 0 ? (targetDist - distances[i]) / segLength : 0;
+      const p1 = pathCoords[i];
+      const p2 = pathCoords[i + 1];
+      const lat = p1[0] + segProgress * (p2[0] - p1[0]);
+      const lng = p1[1] + segProgress * (p2[1] - p1[1]);
+      return [lat, lng];
+    }
+  }
+
+  return pathCoords[pathCoords.length - 1];
+}
+
+function getTramCoords(fromAbv, toAbv, progress) {
+  const fromStop = stopsMap[fromAbv];
+  const toStop = stopsMap[toAbv];
+  if (!toStop) return [0, 0];
+  if (!fromStop || fromAbv === toAbv) return [toStop.lat, toStop.lng];
+
+  const pathCoords = getSegmentCoords(fromAbv, toAbv);
+  if (pathCoords && pathCoords.length > 0) {
+    const interpolated = interpolateAlongPath(pathCoords, progress);
+    if (interpolated) return interpolated;
+  }
+
+  // Fallback to straight-line linear interpolation
+  const lat = fromStop.lat + progress * (toStop.lat - fromStop.lat);
+  const lng = fromStop.lng + progress * (toStop.lng - fromStop.lng);
+  return [lat, lng];
+}
+
 // Estimate travel time between two stops in seconds
 // Speed is approx 25 km/h = 6.94 m/s. Plus 20s stop dwell time.
 function getTravelTime(stopA, stopB) {
@@ -154,11 +226,7 @@ function estimateVehicleCoordinates(vehicle) {
     }
   }
 
-  const fromStop = stopsMap[fromStopAbv] || toStop;
-  const coords = [
-    fromStop.lat + progress * (toStop.lat - fromStop.lat),
-    fromStop.lng + progress * (toStop.lng - fromStop.lng)
-  ];
+  const coords = getTramCoords(fromStopAbv, nextStopAbv, progress);
 
   const headingFromStop = stopsMap[headingFromAbv] || fromStop;
   const headingToStop = stopsMap[headingToAbv] || toStop;
@@ -552,16 +620,9 @@ function processLiveTrams(fetchedData) {
           progress = 0;
         }
 
-        // Calculate GPS coordinates
-        const fromStop = stopsMap[fromStopAbv || toStopAbv];
-        const toStop = stopsMap[toStopAbv];
-        let lat = toStop.lat;
-        let lng = toStop.lng;
-
-        if (fromStop && fromStopAbv !== toStopAbv) {
-          lat = fromStop.lat + progress * (toStop.lat - fromStop.lat);
-          lng = fromStop.lng + progress * (toStop.lng - fromStop.lng);
-        }
+        const coords = getTramCoords(fromStopAbv, toStopAbv, progress);
+        const lat = coords[0];
+        const lng = coords[1];
 
         compiledTrams.push({
           id: `live_${isRedLine?'red':'green'}_${direction.toLowerCase()}_${toStopAbv}_${Math.round(dueMins)}`,
@@ -684,10 +745,7 @@ function updateSimulation() {
     const toStop = stopsMap[curToAbv];
 
     if (fromStop && toStop) {
-      tram.coords = [
-        fromStop.lat + tram.progress * (toStop.lat - fromStop.lat),
-        fromStop.lng + tram.progress * (toStop.lng - fromStop.lng)
-      ];
+      tram.coords = getTramCoords(curFromAbv, curToAbv, tram.progress);
     }
   }
 
