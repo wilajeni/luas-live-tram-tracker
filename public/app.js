@@ -36,6 +36,26 @@ const TRACKS_PATHS = {
 
 let trackSegments = {};
 
+// Mobile Bottom Sheet State management
+function setBottomSheetState(state) {
+  const sidebar = document.getElementById('main-sidebar');
+  if (!sidebar) return;
+
+  sidebar.classList.remove('state-collapsed', 'state-peek', 'state-expanded', 'hide-controls');
+  sidebar.classList.add(`state-${state}`);
+  
+  let heightValue = '35dvh';
+  if (state === 'collapsed') {
+    heightValue = '60px';
+  } else if (state === 'peek') {
+    heightValue = '35dvh';
+  } else if (state === 'expanded') {
+    heightValue = '85dvh';
+  }
+  document.documentElement.style.setProperty('--sheet-height', heightValue);
+  sidebar.style.height = '';
+}
+
 async function loadTracksGeometry() {
   try {
     const response = await fetch('/luas_tracks.json');
@@ -71,6 +91,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Handle minor countdown updates on departures board every second
   timetableCountdownInterval = setInterval(updateDeparturesCountdownLocal, 1000);
+
+  // Initialize mobile bottom sheet state to peek
+  if (window.innerWidth <= 768) {
+    setBottomSheetState('peek');
+  }
 });
 
 function configureLocalOnlyUI() {
@@ -100,7 +125,7 @@ function initMap() {
   map.on('click', () => {
     const sidebar = document.getElementById('main-sidebar');
     if (sidebar && window.innerWidth <= 768) {
-      sidebar.classList.remove('expanded');
+      setBottomSheetState('collapsed');
     }
   });
 
@@ -705,7 +730,7 @@ async function fetchStopForecast(abbrev) {
   // Expand mobile bottom sheet automatically when stop is selected
   const sidebar = document.getElementById('main-sidebar');
   if (sidebar && window.innerWidth <= 768) {
-    sidebar.classList.add('expanded');
+    setBottomSheetState('expanded');
   }
 }
 
@@ -1022,27 +1047,79 @@ function setupUIEventListeners() {
     }
   });
 
-  // Mobile Bottom Sheet Toggle Logic
+  // Mobile Bottom Sheet Drag & Snapping Logic
   const handle = document.getElementById('bottom-sheet-handle');
   const sidebar = document.getElementById('main-sidebar');
   if (handle && sidebar) {
-    handle.addEventListener('click', () => {
-      sidebar.classList.toggle('expanded');
-    });
-    
-    // Add simple touch drag up/down logic for the handle
     let startY = 0;
+    let startHeight = 0;
+    let isDragging = false;
+
+    // Toggle click helper (toggles states on tap/click)
+    handle.addEventListener('click', () => {
+      if (isDragging) return;
+      if (sidebar.classList.contains('state-collapsed')) {
+        setBottomSheetState('peek');
+      } else if (sidebar.classList.contains('state-peek')) {
+        setBottomSheetState('expanded');
+      } else {
+        setBottomSheetState('collapsed');
+      }
+    });
+
     handle.addEventListener('touchstart', (e) => {
       startY = e.touches[0].clientY;
+      startHeight = sidebar.offsetHeight;
+      sidebar.classList.add('dragging');
+      isDragging = false;
     });
+
+    handle.addEventListener('touchmove', (e) => {
+      const currentY = e.touches[0].clientY;
+      const deltaY = currentY - startY;
+
+      if (Math.abs(deltaY) > 5) {
+        isDragging = true;
+      }
+
+      let newHeight = startHeight - deltaY;
+      const vh = window.innerHeight;
+      const maxHeight = vh * 0.88;
+      const minHeight = 60;
+
+      if (newHeight > maxHeight) newHeight = maxHeight;
+      if (newHeight < minHeight) newHeight = minHeight;
+
+      sidebar.style.height = newHeight + 'px';
+      document.documentElement.style.setProperty('--sheet-height', newHeight + 'px');
+
+      // Dynamically fade out controls when sheet is dragged near the top
+      if (newHeight > vh * 0.70) {
+        sidebar.classList.add('hide-controls');
+      } else {
+        sidebar.classList.remove('hide-controls');
+      }
+    });
+
     handle.addEventListener('touchend', (e) => {
-      const endY = e.changedTouches[0].clientY;
-      if (startY - endY > 30) {
-        // swipe up
-        sidebar.classList.add('expanded');
-      } else if (endY - startY > 30) {
-        // swipe down
-        sidebar.classList.remove('expanded');
+      sidebar.classList.remove('dragging');
+      sidebar.classList.remove('hide-controls');
+
+      if (!isDragging) return; // let click listener handle it
+
+      const currentHeight = sidebar.offsetHeight;
+      const vh = window.innerHeight;
+      
+      // Snapping thresholds
+      const collapsedThreshold = 150; 
+      const expandedThreshold = vh * 0.60;
+
+      if (currentHeight < collapsedThreshold) {
+        setBottomSheetState('collapsed');
+      } else if (currentHeight > expandedThreshold) {
+        setBottomSheetState('expanded');
+      } else {
+        setBottomSheetState('peek');
       }
     });
   }

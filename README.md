@@ -10,7 +10,7 @@ An interactive, real-time Dublin Luas tram tracker web application. It displays 
 ## Features
 
 - 🗺️ **Real-time Map tracking**: Active Leaflet map showing Red and Green line routes, stop locations, and current tram positions.
-- 📱 **Mobile & PWA Ready**: Fully responsive design with an interactive bottom sheet for mobile users. Can be installed as a Progressive Web App (PWA) on iOS/Android home screens for a full-screen, app-like experience.
+- 📱 **Mobile & PWA Ready**: Fully responsive design with an interactive, physical-touch draggable bottom sheet supporting three states (Collapsed, Peek, and Expanded) with snapping physics. Floating map controls automatically float right above the drawer in real-time and fade out when fully expanded. Ready for installation as a Progressive Web App (PWA) on iOS/Android for a full-screen standalone experience.
 - ⭐ **Local Favorites**: Save your most-used stations directly to your device via `localStorage`—no account or login required.
 - 📐 **AVLS Tracking and Coordinates Interpolation**: Real-time AVLS (Automatic Vehicle Location System) polling that calculates tram positions and tracks travel direction on each segment using geographical bearings.
 - 🚈 **Directional Arrows**: Trams point dynamically in their exact direction of travel (using spherical bearing calculations).
