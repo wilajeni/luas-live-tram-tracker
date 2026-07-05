@@ -44,13 +44,13 @@ function setBottomSheetState(state) {
   sidebar.classList.remove('state-collapsed', 'state-peek', 'state-expanded', 'hide-controls');
   sidebar.classList.add(`state-${state}`);
   
-  let heightValue = '35dvh';
+  let heightValue = '35vh';
   if (state === 'collapsed') {
     heightValue = '60px';
   } else if (state === 'peek') {
-    heightValue = '35dvh';
+    heightValue = '35vh';
   } else if (state === 'expanded') {
-    heightValue = '85dvh';
+    heightValue = '85vh';
   }
   document.documentElement.style.setProperty('--sheet-height', heightValue);
   sidebar.style.height = '';
@@ -1054,6 +1054,9 @@ function setupUIEventListeners() {
     let startY = 0;
     let startHeight = 0;
     let isDragging = false;
+    let lastY = 0;
+    let velocity = 0;
+    let touchStartTime = 0;
 
     // Toggle click helper (toggles states on tap/click)
     handle.addEventListener('click', () => {
@@ -1069,14 +1072,21 @@ function setupUIEventListeners() {
 
     handle.addEventListener('touchstart', (e) => {
       startY = e.touches[0].clientY;
+      lastY = startY;
+      velocity = 0;
+      touchStartTime = Date.now();
       startHeight = sidebar.offsetHeight;
       sidebar.classList.add('dragging');
       isDragging = false;
-    });
+    }, { passive: false });
 
     handle.addEventListener('touchmove', (e) => {
+      e.preventDefault(); // Stop native scrolling entirely
       const currentY = e.touches[0].clientY;
       const deltaY = currentY - startY;
+
+      velocity = currentY - lastY;
+      lastY = currentY;
 
       if (Math.abs(deltaY) > 5) {
         isDragging = true;
@@ -1099,7 +1109,7 @@ function setupUIEventListeners() {
       } else {
         sidebar.classList.remove('hide-controls');
       }
-    });
+    }, { passive: false });
 
     handle.addEventListener('touchend', (e) => {
       sidebar.classList.remove('dragging');
@@ -1110,16 +1120,31 @@ function setupUIEventListeners() {
       const currentHeight = sidebar.offsetHeight;
       const vh = window.innerHeight;
       
-      // Snapping thresholds
-      const collapsedThreshold = 150; 
-      const expandedThreshold = vh * 0.60;
-
-      if (currentHeight < collapsedThreshold) {
-        setBottomSheetState('collapsed');
-      } else if (currentHeight > expandedThreshold) {
-        setBottomSheetState('expanded');
+      const timeElapsed = Date.now() - touchStartTime;
+      const isFlick = timeElapsed < 300 && Math.abs(velocity) > 5;
+      
+      if (isFlick) {
+        if (velocity > 0) {
+          // Flicked DOWN
+          if (startHeight > vh * 0.5) setBottomSheetState('peek');
+          else setBottomSheetState('collapsed');
+        } else {
+          // Flicked UP
+          if (startHeight < 150) setBottomSheetState('peek');
+          else setBottomSheetState('expanded');
+        }
       } else {
-        setBottomSheetState('peek');
+        // Snapping thresholds
+        const collapsedThreshold = 150; 
+        const expandedThreshold = vh * 0.60;
+
+        if (currentHeight < collapsedThreshold) {
+          setBottomSheetState('collapsed');
+        } else if (currentHeight > expandedThreshold) {
+          setBottomSheetState('expanded');
+        } else {
+          setBottomSheetState('peek');
+        }
       }
     });
   }
