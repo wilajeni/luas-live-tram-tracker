@@ -139,14 +139,12 @@ html {
 body {
   width: 100%;
   height: 100vh;
-  height: 100dvh; /* Fallback: use dvh where supported for dynamic toolbar */
+  height: 100dvh; /* Use dvh where supported for dynamic toolbar */
   font-family: var(--font-body);
   background-color: var(--bg-main);
   color: var(--text-primary);
   overflow: hidden;
   overscroll-behavior: none;
-  /* Extend content behind the home indicator */
-  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -1411,7 +1409,7 @@ body.light-theme .feature-badge {
 
   /* Map overlay controls float above bottom sheet */
   .map-overlay-controls {
-    bottom: calc(var(--sheet-height, 35vh) + 15px);
+    bottom: calc(var(--sheet-height, 35vh) + 25px);
     right: 15px;
     transition: bottom 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.3s ease;
   }
