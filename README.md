@@ -1,17 +1,24 @@
-# Luas Live Tram Tracker (v1.2)
+# Luas Live Tram Tracker
 
-An interactive, real-time Dublin Luas tram tracker web application. It displays live tram positions, tracks segments, handles line notifications, and features a clean glassmorphic UI dashboard with search capability, stop departures timetables, and active tram finders.
+![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
+![Node.js](https://img.shields.io/badge/Node.js-18.x-green.svg)
+
+An interactive, real-time Dublin Luas tram tracker web application. It displays live tram positions, track segments, handles line notifications, and features a clean glassmorphic UI dashboard with search capability, stop departures timetables, and active tram finders.
+
+**Disclaimer**: This project is an independent, unofficial application. It is not affiliated with, endorsed by, or connected to Transport Infrastructure Ireland (TII), Transdev, or the official Luas service. Data is sourced from public API endpoints for educational and personal use.
 
 ## Features
 
 - 🗺️ **Real-time Map tracking**: Active Leaflet map showing Red and Green line routes, stop locations, and current tram positions.
+- 📱 **Mobile & PWA Ready**: Fully responsive design with an interactive bottom sheet for mobile users. Can be installed as a Progressive Web App (PWA) on iOS/Android home screens for a full-screen, app-like experience.
+- ⭐ **Local Favorites**: Save your most-used stations directly to your device via `localStorage`—no account or login required.
 - 📐 **AVLS Tracking and Coordinates Interpolation**: Real-time AVLS (Automatic Vehicle Location System) polling that calculates tram positions and tracks travel direction on each segment using geographical bearings.
 - 🚈 **Directional Arrows**: Trams point dynamically in their exact direction of travel (using spherical bearing calculations).
-- 🕒 **Departures Timetable Card**: Displays upcoming inbound/outbound departures in a highly compact view, featuring an internal scrollbar when listing multiple upcoming trams.
-- 🔔 **Calm/Alert Notification Banners**: Banners placed at the top-right of the map display line conditions. Normal operation stays calm and subtle, while active alerts trigger eye-catching warnings.
-- 💡 **Selected Stop Highlights**: Clicking stop markers displays them as prominent hollow rings in their line's colour with outer glows.
+- 🕒 **Departures Timetable Card**: Displays upcoming inbound/outbound departures in a highly compact view, including ETA calculations.
+- 🔔 **Alert Notification Banners**: Banners placed at the top-right of the map display line conditions. Normal operation stays calm and subtle, while active alerts trigger eye-catching warnings.
+- 🛡️ **Smart Polling & Security**: Backend utilizes smart lazy polling to pause API requests when no users are active, conserving resources. Secured with `helmet` and `express-rate-limit`.
 - 🔄 **Timetable Simulation fallback**: Automatically detects if the live API is disconnected or has zero active trams, falling back to a realistic simulated timetable to ensure full application availability.
-- 🛠️ **System Diagnostics**: Development/testing panel containing API connectivity checks and manual mode forcing, visible on local environments only.
+- 🌗 **Dark/Light Modes**: Full Light Theme support toggled via a floating Sun/Moon button, switching between CartoDB Dark Matter and Positron tiles dynamically.
 
 ---
 
@@ -30,28 +37,38 @@ You need [Node.js](https://nodejs.org/) installed on your machine.
    npm install
    ```
 
-### Running the App
+### Running Locally
 
 To start the server, run:
-   ```bash
-   node server.js
-   ```
+```bash
+node server.js
+```
+
 The app will output:
-   `Luas Tram Tracker Server listening on port 3000`
+`Luas Tram Tracker Server listening on port 3000`
 
 Open your browser and navigate to:
-   [http://localhost:3000/](http://localhost:3000/)
+[http://localhost:3000/](http://localhost:3000/)
+
+### Deployment (Render.com)
+
+This application is optimized for free-tier hosting on Render:
+1. Connect your GitHub repository to Render and create a **Web Service**.
+2. Build Command: `npm install`
+3. Start Command: `node server.js`
+4. **Keep-Alive**: To prevent the free tier from spinning down, the app exposes a `/api/ping` endpoint. You can use a free service like [cron-job.org](https://cron-job.org/) to ping this URL every 9 minutes.
 
 ---
 
 ## Code Architecture
 
-- **`server.js`**: The Express server hosting API proxies (`/api/forecast/:abbrev`, `/api/trams`, `/api/status`, `/api/stops`) and executing the main background loop.
-- **`avls_module.js`**: Module polling the National Transport Authority AVLS feed, tracking vehicle history, and mapping XML data to active tram objects.
-- **`public/index.html`**: Structured HTML5 skeleton of the responsive layout container.
-- **`public/app.js`**: Client-side controller handling leaflet rendering, UI updates, search filtering, and state synchronization.
-- **`public/style.css`**: Complete premium dark-glassmorphism stylesheet with responsive breakpoints and custom scrollbars.
-- **`stops.json`**: Static database compiling names, abbreviations, coordinates, and facilities (cycle parking, park & ride) for all Red and Green line stops.
+- **`server.js`**: The Express server hosting API proxies and executing the main background loop.
+- **`avls_module.js`**: Module polling the AVLS feed, tracking vehicle history, and mapping XML data to active tram objects.
+- **`public/`**: Contains the frontend assets:
+  - **`index.html`**: Structured HTML5 skeleton of the responsive layout container.
+  - **`app.js`**: Client-side controller handling Leaflet rendering, UI updates, search filtering, and state synchronization.
+  - **`style.css`**: Complete premium glassmorphism stylesheet with responsive breakpoints.
+- **`stops.json`**: Static database compiling names, abbreviations, coordinates, and facilities for all Red and Green line stops.
 
 ---
 
@@ -59,41 +76,12 @@ Open your browser and navigate to:
 
 The backend dynamically estimates the position of trams between stations when live GPS feeds are unavailable. It does this by:
 1. Finding the tram's route path and current segment (between two stops).
-2. Calculating the progress along the segment:
-   $$\text{Progress} = \frac{\text{TravelTime} - \text{DueMins}}{\text{TravelTime}}$$
+2. Calculating the progress along the segment based on `TravelTime` and `DueMins`.
 3. Calculating coordinates by linear interpolation of latitude and longitude.
-4. On the client side, the heading (bearing) is computed using the spherical model:
-   $$y = \sin(\Delta\lambda) \cdot \cos(\phi_2)$$
-   $$x = \cos(\phi_1) \cdot \sin(\phi_2) - \sin(\phi_1) \cdot \cos(\phi_2) \cdot \cos(\Delta\lambda)$$
-   $$\text{Bearing} = \operatorname{atan2}(y, x)$$
-   The tram icon is then rotated dynamically to point towards the next stop.
+4. On the client side, the heading (bearing) is computed using the spherical model. The tram icon is then rotated dynamically to point towards the next stop.
 
 ---
 
-## Version History
+## License
 
-- **v1.3** (Current)
-  - Implemented iOS Web App (PWA) support with custom `apple-touch-icon` and full-screen standalone mode.
-  - Added 'Favorite Stations' functionality utilizing `localStorage` to save stops directly to the device without requiring user accounts.
-  - Introduced smart Lazy Polling for the backend API, pausing downstream requests when no active clients are detected for 2 minutes to conserve Luas API quotas.
-  - Integrated `helmet` and `express-rate-limit` for robust backend security against path traversal, XSS, and rate exhaustion.
-  - Added a `/api/ping` keep-alive endpoint for automated wake-timers (like Cron-Job.org) to prevent Render.com cold starts.
-- **v1.2**
-  - Implemented ETA calculation alongside 'Due in' minutes for all active trams.
-  - Replaced straight lines with realistic curved rail tracks between stations.
-  - Updated track styling to use dashed lines with increased transparency for a cleaner aesthetic.
-  - Delivered comprehensive mobile & tablet responsiveness, including a touch-friendly interactive bottom sheet and hardware safe-area adaptations.
-  - Restructured sidebar navigation into distinct Station and Tram tabs.
-- **v1.1**
-  - Added full Light Theme support toggled via a floating Sun/Moon button, switching between CartoDB Dark Matter and Positron tiles dynamically.
-  - Implemented dynamic departures board tabs (Inbound, Outbound, Terminating) adapting via CSS Grid.
-  - Relocated Park & Ride (`P&R`) and Cycle Parking (`CP`) facilities directly to the station title line as compact pills.
-  - Cleaned up borders and inputs to react gracefully to color theme variables.
-  - Removed overall shadow of the left sidebar for a cleaner flat design.
-- **v1.0**
-  - Simplified departures timetable card to render rows compactly in a single line.
-  - Added internal scrollbar inside `#station-departures-card` timetable list.
-  - Implemented spherical bearing formulas for tram arrows.
-  - Split alert system into two floating top-right banners with normal/warning icons.
-  - Refactored selected stop highlight map icons to use prominent white-filled outer glow rings.
-  - Git repository initialized, staged, and tagged.
+This project is open-source and available under the [MIT License](LICENSE).
