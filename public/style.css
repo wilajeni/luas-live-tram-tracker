@@ -288,11 +288,11 @@ h1, h2, h3, h4, h5, h6 {
   gap: 12px;
 }
 
-.logo-icon {
-  font-size: 2.2rem;
-  background: linear-gradient(135deg, var(--red-line), var(--green-line));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+.logo-icon-img {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  object-fit: cover;
   filter: drop-shadow(0 2px 5px var(--shadow-logo-drop));
 }
 
@@ -489,7 +489,7 @@ h1, h2, h3, h4, h5, h6 {
   flex-direction: column;
   gap: 10px;
   flex-shrink: 0;         /* never compress this section */
-  max-height: 300px;      /* cap height; internal list scrolls */
+  max-height: 450px;      /* cap height; fits ~4 tram rows, internal list scrolls */
 }
 
 .panel-title-row {
@@ -1347,7 +1347,7 @@ body.light-theme .feature-badge {
     top: 0;
     left: 0;
     width: 100%;
-    height: 100dvh;
+    height: 100vh;
     z-index: 1;
   }
   

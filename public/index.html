@@ -12,6 +12,9 @@
   <meta name="apple-mobile-web-app-title" content="Luas Live">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   
+  <!-- Favicon (matches apple-touch-icon) -->
+  <link rel="icon" type="image/png" href="/favicon.png">
+  
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -26,7 +29,7 @@
   <!-- Custom Styling -->
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="light-theme">
 
   <!-- Main Grid App Layout -->
   <div class="app-container" id="app-root">
@@ -39,7 +42,7 @@
       <!-- App Header -->
       <header class="app-header">
         <div class="logo-area">
-          <i class="fa-solid fa-train-tram logo-icon"></i>
+          <img src="/apple-touch-icon.png" alt="Luas Tracker" class="logo-icon-img">
           <h1>Luas Tracker</h1>
         </div>
         <p class="app-tagline"> Dublin Tram Live System Map </p>
@@ -220,7 +223,7 @@
       
       <!-- Floating Map Controls (Zoom reset, Layer toggles, Theme toggle) -->
       <div class="map-overlay-controls">
-        <button id="btn-toggle-theme" class="map-floating-btn" title="Toggle light/dark theme"><i class="fa-solid fa-sun"></i></button>
+        <button id="btn-toggle-theme" class="map-floating-btn" title="Switch to dark theme"><i class="fa-solid fa-moon"></i></button>
         <button id="btn-reset-view" class="map-floating-btn" title="Reset view to full Dublin area"><i class="fa-solid fa-globe"></i></button>
         <button id="btn-toggle-trams" class="map-floating-btn active" title="Toggle active tram markers"><i class="fa-solid fa-train"></i></button>
       </div>

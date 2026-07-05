@@ -115,7 +115,7 @@ function initMap() {
     maxZoom: 18
   }).setView([53.335, -6.26], 12);
 
-  tileLayer = L.tileLayer(MAP_TILES_DARK, {
+  tileLayer = L.tileLayer(MAP_TILES_LIGHT, {
     attribution: MAP_ATTRIBUTION,
     subdomains: 'abcd',
     maxZoom: 20
