@@ -792,6 +792,73 @@ h1, h2, h3, h4, h5, h6 {
   border-color: var(--border-color-focus);
 }
 
+/* Favorite Toggle Button */
+.favorite-toggle-btn {
+  background-color: var(--bg-subtle);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 8px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.favorite-toggle-btn:hover {
+  background-color: var(--bg-subtle-hover);
+  border-color: var(--border-color-focus);
+  color: #ffca28;
+}
+
+.favorite-toggle-btn.active {
+  color: #ffca28;
+  border-color: #ffca28;
+  background-color: rgba(255, 202, 40, 0.1);
+  box-shadow: 0 0 8px rgba(255, 202, 40, 0.3);
+}
+
+/* Favorite Stations Chip List */
+.favorites-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.favorite-chip {
+  background-color: var(--bg-row);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: var(--transition-smooth);
+}
+
+.favorite-chip:hover {
+  background-color: var(--bg-button-hover);
+  border-color: var(--border-color-focus);
+  transform: translateY(-1px);
+}
+
+.favorite-chip .line-indicator {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.favorite-chip.red-line-chip .line-indicator {
+  background-color: var(--red-line);
+}
+
+.favorite-chip.green-line-chip .line-indicator {
+  background-color: var(--green-line);
+}
+
 /* Station Features badges */
 .feature-badge {
   font-size: 0.72rem;

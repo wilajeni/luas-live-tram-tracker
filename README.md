@@ -72,7 +72,13 @@ The backend dynamically estimates the position of trams between stations when li
 
 ## Version History
 
-- **v1.2** (Current)
+- **v1.3** (Current)
+  - Implemented iOS Web App (PWA) support with custom `apple-touch-icon` and full-screen standalone mode.
+  - Added 'Favorite Stations' functionality utilizing `localStorage` to save stops directly to the device without requiring user accounts.
+  - Introduced smart Lazy Polling for the backend API, pausing downstream requests when no active clients are detected for 2 minutes to conserve Luas API quotas.
+  - Integrated `helmet` and `express-rate-limit` for robust backend security against path traversal, XSS, and rate exhaustion.
+  - Added a `/api/ping` keep-alive endpoint for automated wake-timers (like Cron-Job.org) to prevent Render.com cold starts.
+- **v1.2**
   - Implemented ETA calculation alongside 'Due in' minutes for all active trams.
   - Replaced straight lines with realistic curved rail tracks between stations.
   - Updated track styling to use dashed lines with increased transparency for a cleaner aesthetic.

@@ -9,6 +9,16 @@ const { fetchAllAVLSData, compileVehiclePositions } = require('./avls_module');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Security middleware
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
+app.use(helmet({ contentSecurityPolicy: false }));
+app.use('/api/', rateLimit({
+  windowMs: 60 * 1000,
+  max: 60,
+  message: { error: 'Too many requests, please try again later.' }
+}));
+
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -458,7 +468,7 @@ async function fetchAllForecasts() {
   const fetchSingleStop = (abv) => {
     return new Promise((resolve) => {
       const url = `https://luasforecasts.rpa.ie/xml/get.ashx?action=forecast&stop=${abv}&encrypt=false`;
-      https.get(url, (res) => {
+      https.get(url, { headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' } }, (res) => {
         if (res.statusCode !== 200) {
           resolve({ abv, error: `Status code ${res.statusCode}` });
           return;
@@ -881,10 +891,37 @@ function getSimulatedTramsList() {
 }
 
 // -------------------------------------------------------------
+// CLIENT ACTIVITY TRACKING (Lazy API Polling)
+// -------------------------------------------------------------
+let lastClientActiveTime = 0;
+const CLIENT_IDLE_THRESHOLD_MS = 120000; // 2 minutes
+
+function updateClientActivity() {
+  const wasIdle = (Date.now() - lastClientActiveTime) > CLIENT_IDLE_THRESHOLD_MS;
+  lastClientActiveTime = Date.now();
+
+  // If waking from idle, trigger an immediate data refresh
+  if (wasIdle) {
+    console.log('Client active after idle period. Triggering immediate data refresh...');
+    systemUpdateCycle();
+    pollAVLSVehicles();
+  }
+}
+
+function isClientActive() {
+  return (Date.now() - lastClientActiveTime) <= CLIENT_IDLE_THRESHOLD_MS;
+}
+
+// -------------------------------------------------------------
 // BACKGROUND POLL & UPDATE TASK
 // -------------------------------------------------------------
 
 async function systemUpdateCycle() {
+  // Skip polling if no active clients (save API quota)
+  if (!isClientActive()) {
+    return;
+  }
+
   if (CONFIG.mode === 'simulation') {
     SYSTEM_STATUS.currentMode = 'simulation';
     SYSTEM_STATUS.apiConnected = false;
@@ -951,6 +988,11 @@ async function systemUpdateCycle() {
 // -------------------------------------------------------------
 
 async function pollAVLSVehicles() {
+  // Skip polling if no active clients (save API quota)
+  if (!isClientActive()) {
+    return;
+  }
+
   try {
     console.log('Polling AVLS vehicle positions...');
     const entries = await fetchAllAVLSData();
@@ -986,6 +1028,11 @@ async function pollAVLSVehicles() {
 // API EXPRESS ROUTER
 // -------------------------------------------------------------
 
+// Ping endpoint for Render keep-alive (does NOT trigger client activity)
+app.get('/api/ping', (req, res) => {
+  res.json({ status: 'ok', uptime: Math.round(process.uptime()) });
+});
+
 // Get all stops (grouped by line)
 app.get('/api/stops', (req, res) => {
   res.json(stopsData);
@@ -993,6 +1040,7 @@ app.get('/api/stops', (req, res) => {
 
 // Get system status (mode, API connection, alerts)
 app.get('/api/status', (req, res) => {
+  updateClientActivity();
   res.json(SYSTEM_STATUS);
 });
 
@@ -1015,6 +1063,7 @@ app.get('/api/mode/:mode', (req, res) => {
 
 // Get all currently tracked/simulated trams
 app.get('/api/trams', (req, res) => {
+  updateClientActivity();
   if (CONFIG.mode === 'simulation') {
     res.json({ trams: getSimulatedTramsList() });
   } else {
@@ -1093,6 +1142,14 @@ app.get('/api/vehicles/:tramNumber', (req, res) => {
 // Get live departures board for a specific stop
 app.get('/api/forecast/:stop', (req, res) => {
   const stopAbbrev = req.params.stop.toUpperCase();
+
+  // Input validation: only allow 2-4 uppercase letters
+  if (!/^[A-Z]{2,4}$/.test(stopAbbrev)) {
+    return res.status(400).json({ error: 'Invalid stop abbreviation.' });
+  }
+
+  updateClientActivity();
+
   if (!stopsMap[stopAbbrev]) {
     return res.status(404).json({ error: 'Stop not found.' });
   }

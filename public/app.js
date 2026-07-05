@@ -9,6 +9,7 @@ let stopMarkers = {};
 let tramMarkers = {};
 let selectedStopAbbrev = null;
 let currentTab = 'Inbound'; // 'Inbound' or 'Outbound'
+let favoriteStops = [];
 let apiPollInterval;
 let timetableCountdownInterval;
 let activeLineFilter = null; // 'Red', 'Green' or null
@@ -50,7 +51,9 @@ async function loadTracksGeometry() {
 document.addEventListener('DOMContentLoaded', async () => {
   configureLocalOnlyUI();
   initMap();
+  loadFavorites();
   await loadStops();
+  renderFavorites();
   await loadTracksGeometry();
   drawTracks();
   setupUIEventListeners();
@@ -127,6 +130,87 @@ async function loadStops() {
     }
   } catch (error) {
     console.error('Error fetching stops list:', error);
+  }
+}
+
+// 3.5 Favorite Stops Management (LocalStorage)
+// ==========================================================================
+function loadFavorites() {
+  try {
+    const stored = localStorage.getItem('luas_favorite_stops');
+    favoriteStops = stored ? JSON.parse(stored) : [];
+  } catch (e) {
+    console.error('Error loading favorites from localStorage:', e);
+    favoriteStops = [];
+  }
+}
+
+function saveFavorites() {
+  try {
+    localStorage.setItem('luas_favorite_stops', JSON.stringify(favoriteStops));
+  } catch (e) {
+    console.error('Error saving favorites to localStorage:', e);
+  }
+}
+
+function toggleFavoriteStop(abbrev) {
+  if (!abbrev) return;
+  const index = favoriteStops.indexOf(abbrev);
+  if (index === -1) {
+    favoriteStops.push(abbrev);
+  } else {
+    favoriteStops.splice(index, 1);
+  }
+  saveFavorites();
+  renderFavorites();
+  updateFavoriteButtonState();
+}
+
+function renderFavorites() {
+  const container = document.getElementById('favorites-list');
+  const section = document.getElementById('favorites-section');
+  if (!container || !section) return;
+
+  if (favoriteStops.length === 0) {
+    section.style.display = 'none';
+    return;
+  }
+
+  container.innerHTML = '';
+  favoriteStops.forEach(abbrev => {
+    const stop = stopsMap[abbrev];
+    if (!stop) return;
+
+    const chip = document.createElement('div');
+    const isRed = stop.line === 'Red';
+    chip.className = `favorite-chip ${isRed ? 'red-line-chip' : 'green-line-chip'}`;
+    chip.innerHTML = `
+      <span class="line-indicator"></span>
+      <span>${escapeHtml(stop.name)}</span>
+    `;
+    chip.addEventListener('click', () => {
+      selectStop(abbrev);
+      map.flyTo([stop.lat, stop.lng], 15);
+    });
+    container.appendChild(chip);
+  });
+
+  section.style.display = 'block';
+}
+
+function updateFavoriteButtonState() {
+  const btn = document.getElementById('btn-toggle-favorite');
+  if (!btn) return;
+
+  const isFavorited = selectedStopAbbrev && favoriteStops.includes(selectedStopAbbrev);
+  if (isFavorited) {
+    btn.classList.add('active');
+    btn.innerHTML = '<i class="fa-solid fa-star"></i>';
+    btn.title = 'Remove from Favorites';
+  } else {
+    btn.classList.remove('active');
+    btn.innerHTML = '<i class="fa-regular fa-star"></i>';
+    btn.title = 'Pin to Favorites';
   }
 }
 
@@ -556,6 +640,9 @@ async function selectStop(abbrev) {
   document.getElementById('feature-park-ride').style.display = stop.isParkRide ? 'flex' : 'none';
   document.getElementById('feature-cycle').style.display = stop.isCycleRide ? 'flex' : 'none';
 
+  // Update favorite button state
+  updateFavoriteButtonState();
+
   // Fetch forecast arrivals
   await fetchStopForecast(abbrev);
 }
@@ -739,8 +826,10 @@ function setupUIEventListeners() {
       matches.slice(0, 5).forEach(match => {
         const li = document.createElement('li');
         const isRed = match.line === 'Red';
+        const isFav = favoriteStops.includes(match.abbrev);
+        const starIcon = isFav ? '<i class="fa-solid fa-star" style="color: #ffca28; margin-right: 6px;"></i>' : '';
         li.innerHTML = `
-          <span class="suggestion-name">${match.name}</span>
+          <span class="suggestion-name">${starIcon}${match.name}</span>
           <span class="suggestion-line" style="background-color:${isRed ? 'var(--red-line-bg)' : 'var(--green-line-bg)'}; color:${isRed ? 'var(--red-line)' : 'var(--green-line)'}">${match.line} Line</span>
         `;
         li.addEventListener('click', () => {
@@ -795,6 +884,14 @@ function setupUIEventListeners() {
       suggestionsBox.style.display = 'none';
     }
   });
+
+  // Favorite toggle button listener
+  const btnToggleFav = document.getElementById('btn-toggle-favorite');
+  if (btnToggleFav) {
+    btnToggleFav.addEventListener('click', () => {
+      toggleFavoriteStop(selectedStopAbbrev);
+    });
+  }
 
   // Center button inside departures panel
   document.getElementById('btn-fly-to-stop').addEventListener('click', () => {

@@ -5,6 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
   <title>Luas Live Tram Tracker - Dublin Real-Time Transit Map</title>
   <meta name="description" content="Track Dublin Luas trams in real-time on our interactive map. View arrival forecasts, schedules, and active service alerts for Red and Green lines stop-by-stop.">
+
+  <!-- iOS Web App Meta Tags -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Luas Live">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -70,6 +76,14 @@
         </div>
       </section>
 
+      <!-- Favorite Stations Panel -->
+      <section class="favorites-panel glass-card" id="favorites-section" style="display: none;">
+        <h2 class="panel-title"><i class="fa-solid fa-star" style="color: #ffca28;"></i> Favorite Stations</h2>
+        <div class="favorites-list" id="favorites-list">
+          <!-- Dynamically populated favorite stops -->
+        </div>
+      </section>
+
       <!-- Stop Departures Board -->
       <section class="departures-panel glass-card" id="station-departures-card">
         <!-- Default State: No Station Selected -->
@@ -88,7 +102,10 @@
               <span id="feature-park-ride" class="feature-badge" title="Park & Ride" style="display: none;"><i class="fa-solid fa-square-p"></i> P&R</span>
               <span id="feature-cycle" class="feature-badge" title="Cycle Parking" style="display: none;"><i class="fa-solid fa-bicycle"></i> CP</span>
             </div>
-            <button id="btn-fly-to-stop" class="fly-to-btn" title="Center map on station"><i class="fa-solid fa-crosshairs"></i></button>
+            <div style="display: flex; gap: 8px;">
+              <button id="btn-toggle-favorite" class="favorite-toggle-btn" title="Pin to Favorites"><i class="fa-regular fa-star"></i></button>
+              <button id="btn-fly-to-stop" class="fly-to-btn" title="Center map on station"><i class="fa-solid fa-crosshairs"></i></button>
+            </div>
           </div>
 
 
