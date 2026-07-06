@@ -720,7 +720,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* When populated, cap height so the panel doesn't dominate the sidebar, scrolling its list internally */
 .departures-panel.has-stop {
-  max-height: 280px;
+  max-height: 450px; /* matched to tram-finder-panel for consistency */
   overflow: hidden;
 }
 
