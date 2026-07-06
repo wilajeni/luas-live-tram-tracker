@@ -202,6 +202,14 @@ function normalizeDueMins(dueMins) {
   return Number(dueMins);
 }
 
+function getDynamicDueMins(item) {
+  if (item && item.etaTime) {
+    const diff = (item.etaTime - Date.now()) / 60000;
+    return Math.max(0.1, diff); // Clamp to 0.1 so it doesn't go negative/DUE prematurely
+  }
+  return normalizeDueMins(item ? item.dueMins : null);
+}
+
 function estimateVehicleCoordinates(vehicle) {
   const nextStopAbv = vehicle.nextStop;
   const toStop = stopsMap[nextStopAbv];
@@ -209,7 +217,7 @@ function estimateVehicleCoordinates(vehicle) {
 
   const routePath = findBestRoutePath(vehicle.line, vehicle.direction, vehicle.destination);
   const nextStopIdx = routePath.indexOf(nextStopAbv);
-  const dueMins = normalizeDueMins(vehicle.dueMins);
+  const dueMins = getDynamicDueMins(vehicle);
 
   let fromStopAbv = nextStopAbv;
   let headingFromAbv = nextStopAbv;
@@ -257,7 +265,7 @@ function vehicleToMapTram(vehicle) {
   const estimate = estimateVehicleCoordinates(vehicle);
   const stop = stopsMap[vehicle.nextStop];
   if (!estimate || !stop) return null;
-  const dueMins = normalizeDueMins(vehicle.dueMins);
+  const dueMins = getDynamicDueMins(vehicle);
 
   return {
     id: `avls_${vehicle.tramNumber}`,
@@ -291,7 +299,7 @@ function enrichVehicleForFinder(vehicle, isCurrent = true) {
     isCurrent,
     nextStopAbv: vehicle.nextStop,
     nextStopName: stop ? stop.name : vehicle.nextStop,
-    dueMins: normalizeDueMins(vehicle.dueMins),
+    dueMins: getDynamicDueMins(vehicle),
     coords: estimate ? estimate.coords : null,
     segment: estimate ? estimate.segment : null,
     lastSeenAt: vehicle.lastSeenAt || null,
@@ -323,11 +331,15 @@ function getAVLSForecastForStop(stopAbbrev) {
     const sighting = (vehicle.sightings || []).find(item => item.stopAbbrev === stopAbbrev);
     if (!sighting) return;
 
-    const dueMins = normalizeDueMins(sighting.dueMins);
+    const dueMins = getDynamicDueMins(sighting);
     if (dueMins === null) return;
 
+    // Filter out trams that have already passed the stop (e.g. ETA was more than 1.5 mins ago)
+    const rawDiff = sighting.etaTime ? (sighting.etaTime - Date.now()) / 60000 : sighting.dueMins;
+    if (rawDiff < -1.5) return;
+
     const finalDue = dueMins <= 0.5 ? 0.5 : Math.round(dueMins);
-    const etaDate = new Date(Date.now() + finalDue * 60000);
+    const etaDate = new Date(sighting.etaTime || (Date.now() + finalDue * 60000));
     trams.push({
       direction: sighting.direction,
       destination: sighting.destination,

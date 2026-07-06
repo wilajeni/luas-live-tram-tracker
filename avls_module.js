@@ -78,6 +78,38 @@ function parseTimeToMinutes(timeStr) {
   return null;
 }
 
+function parseDublinDate(dateStr) {
+  if (!dateStr || typeof dateStr !== 'string') return null;
+  const m = dateStr.match(/^(\d{2})\/(\d{2})\/(\d{4})\s+(\d{2}):(\d{2}):(\d{2})$/);
+  if (!m) return null;
+  const [_, day, month, year, hour, min, sec] = m;
+  
+  // Construct a date assuming the numbers are UTC (base guess)
+  const baseGuess = new Date(Date.UTC(Number(year), Number(month) - 1, Number(day), Number(hour), Number(min), Number(sec)));
+  if (isNaN(baseGuess.getTime())) return null;
+
+  // Format in Europe/Dublin timezone to find the mismatch
+  try {
+    const formatter = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'Europe/Dublin',
+      year: 'numeric', month: 'numeric', day: 'numeric',
+      hour: 'numeric', minute: 'numeric', second: 'numeric',
+      hour12: false
+    });
+    
+    const formatted = formatter.format(baseGuess);
+    const mFormatted = formatted.match(/(\d+)\/(\d+)\/(\d+),\s+(\d+):(\d+):(\d+)/);
+    if (!mFormatted) return baseGuess;
+    
+    const [__, fMonth, fDay, fYear, fHour, fMin, fSec] = mFormatted;
+    const formattedUTC = Date.UTC(Number(fYear), Number(fMonth) - 1, Number(fDay), Number(fHour), Number(fMin), Number(fSec));
+    const offset = formattedUTC - baseGuess.getTime();
+    return new Date(baseGuess.getTime() - offset);
+  } catch (e) {
+    return baseGuess; // Fallback
+  }
+}
+
 function parseStopPage(stopId, html) {
   const abbrev = STOP_ID_MAP[stopId];
   if (!abbrev) return [];
@@ -99,9 +131,12 @@ function parseStopPage(stopId, html) {
       cells.push(text);
     }
 
-    // Columns: Direction(0), Destination(1), Time(2), AVLS Time(3), Tram(4), Action(5)
-    if (cells.length >= 5 && /^\d{4}$/.test(cells[4])) {
+    // Columns: Direction(0), Destination(1), Time(2), AVLS Time(3), Tram(4), Action(5), Msg Sent(6)
+    if (cells.length >= 7 && /^\d{4}$/.test(cells[4])) {
       const dueMins = parseTimeToMinutes(cells[3]) ?? parseTimeToMinutes(cells[2]);
+      const msgSentTime = parseDublinDate(cells[6]) || new Date();
+      const etaTime = msgSentTime.getTime() + (dueMins || 0) * 60000;
+      
       entries.push({
         stopAbbrev: abbrev,
         stopId: Number(stopId),
@@ -110,7 +145,9 @@ function parseStopPage(stopId, html) {
         destination: cells[1],
         dueMins,
         tramNumber: cells[4],
-        action: cells[5] || ''
+        action: cells[5] || '',
+        msgSentTime: msgSentTime.toISOString(),
+        etaTime
       });
     }
   }
@@ -168,21 +205,23 @@ function compileVehiclePositions(entries) {
       stopId: e.stopId,
       direction: e.direction,
       destination: e.destination,
-      dueMins: e.dueMins
+      dueMins: e.dueMins,
+      etaTime: e.etaTime
     });
   });
 
-  // For each vehicle, find the nearest upcoming stop (min dueMins)
+  // For each vehicle, find the nearest upcoming stop (min etaTime)
   Object.values(vehicleMap).forEach(v => {
     v.sightings.sort((a, b) => {
-      if (a.dueMins === null) return 1;
-      if (b.dueMins === null) return -1;
-      return a.dueMins - b.dueMins;
+      if (a.etaTime === null || a.etaTime === undefined) return 1;
+      if (b.etaTime === null || b.etaTime === undefined) return -1;
+      return a.etaTime - b.etaTime;
     });
 
     const nearest = v.sightings[0];
     v.nextStop = nearest.stopAbbrev;
     v.nextStopId = nearest.stopId;
+    v.etaTime = nearest.etaTime;
     v.dueMins = nearest.dueMins;
     // Use the direction/destination of the nearest sighting
     v.direction = nearest.direction;
