@@ -684,12 +684,14 @@ async function selectStop(abbrev) {
 }
 
 // Fetch departures board for selected stop
-async function fetchStopForecast(abbrev) {
-  document.getElementById('departures-loading').style.display = 'flex';
-  document.getElementById('timetable-inbound-list').style.display = 'none';
-  document.getElementById('timetable-outbound-list').style.display = 'none';
-  document.getElementById('timetable-terminating-list').style.display = 'none';
-  document.getElementById('departures-none-msg').style.display = 'none';
+async function fetchStopForecast(abbrev, isBackgroundRefresh = false) {
+  if (!isBackgroundRefresh) {
+    document.getElementById('departures-loading').style.display = 'flex';
+    document.getElementById('timetable-inbound-list').style.display = 'none';
+    document.getElementById('timetable-outbound-list').style.display = 'none';
+    document.getElementById('timetable-terminating-list').style.display = 'none';
+    document.getElementById('departures-none-msg').style.display = 'none';
+  }
 
   try {
     const response = await fetch(`/api/forecast/${abbrev}`);
@@ -717,6 +719,16 @@ async function fetchStopForecast(abbrev) {
       }
     }
 
+    // Save scroll right before DOM change to prevent user's current scroll from jumping
+    const listWrapper = document.querySelector('.departures-list-wrapper');
+    const sidebar = document.getElementById('main-sidebar');
+    let savedListScroll = 0;
+    let savedSidebarScroll = 0;
+    if (isBackgroundRefresh) {
+      if (listWrapper) savedListScroll = listWrapper.scrollTop;
+      if (sidebar) savedSidebarScroll = sidebar.scrollTop;
+    }
+
     // Populate lists
     const lineTheme = stopMarkers[abbrev] ? stopsMap[abbrev].line : 'Red';
     populateTimetableList('timetable-inbound-list', inboundTrams, lineTheme);
@@ -729,6 +741,12 @@ async function fetchStopForecast(abbrev) {
     // Check if all lists are empty
     if (inboundTrams.length === 0 && outboundTrams.length === 0 && terminatingTrams.length === 0) {
       document.getElementById('departures-none-msg').style.display = 'flex';
+    }
+
+    // Restore scroll after DOM updates
+    if (isBackgroundRefresh) {
+      if (listWrapper) listWrapper.scrollTop = savedListScroll;
+      if (sidebar) sidebar.scrollTop = savedSidebarScroll;
     }
 
   } catch (error) {
@@ -746,7 +764,8 @@ function populateTimetableList(elementId, trams, lineTheme) {
 
   if (trams.length === 0) {
     container.innerHTML = `
-      <div style="text-align:center; padding: 20px 0; color:var(--text-secondary); font-size:0.85rem;">
+      <div class="timetable-empty-msg">
+        <i class="fa-solid fa-clock-rotate-left"></i>
         No upcoming scheduled trams.
       </div>
     `;
@@ -794,7 +813,7 @@ function updateDeparturesCountdownLocal() {
   // But we can let the UI count down the dueMins values in-between!
   // Simple check: we just trigger a poll to the server forecast at longer intervals
   if (Date.now() % 8000 < 1000) {
-    fetchStopForecast(selectedStopAbbrev);
+    fetchStopForecast(selectedStopAbbrev, true);
   }
 }
 

@@ -496,7 +496,6 @@ h1, h2, h3, h4, h5, h6 {
   flex-direction: column;
   gap: 10px;
   flex-shrink: 0;         /* never compress this section */
-  max-height: 450px;      /* cap height; fits ~4 tram rows, internal list scrolls */
 }
 
 .panel-title-row {
@@ -578,7 +577,7 @@ h1, h2, h3, h4, h5, h6 {
   flex-direction: column;
   gap: 8px;
   overflow-y: auto;
-  min-height: 90px;
+  height: 260px; /* Fixed height for exactly 5 rows */
   padding-right: 2px;
 }
 
@@ -665,10 +664,17 @@ h1, h2, h3, h4, h5, h6 {
   font-size: 0.84rem;
   padding: 18px 8px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 8px;
   text-align: center;
+  height: 100%; /* Fill the fixed 260px container */
+}
+
+.tram-empty-state i {
+  font-size: 1.8rem;
+  color: var(--text-muted);
 }
 
 /* Fast Line Selector Buttons */
@@ -718,9 +724,8 @@ h1, h2, h3, h4, h5, h6 {
   flex-shrink: 0;         /* don't compress, scroll sidebar instead */
 }
 
-/* When populated, cap height so the panel doesn't dominate the sidebar, scrolling its list internally */
+/* When populated, the panel has fixed height determined by the list wrapper */
 .departures-panel.has-stop {
-  max-height: 450px; /* matched to tram-finder-panel for consistency */
   overflow: hidden;
 }
 
@@ -918,8 +923,8 @@ body.light-theme .feature-badge {
 
 /* Departures Timetable Rows */
 .departures-list-wrapper {
-  flex: 1;
-  min-height: 0;
+  flex: none; /* remove flex: 1 so height applies */
+  height: 215px; /* Fixed height for exactly 5 rows */
   overflow-y: auto;
   position: relative;
 }
@@ -1015,6 +1020,23 @@ body.light-theme .feature-badge {
 }
 
 .departures-status-msg i {
+  font-size: 1.5rem;
+  color: var(--text-muted);
+}
+
+.timetable-empty-msg {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 215px; /* Match the departures-list-wrapper height */
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  gap: 8px;
+  text-align: center;
+}
+
+.timetable-empty-msg i {
   font-size: 1.5rem;
   color: var(--text-muted);
 }
