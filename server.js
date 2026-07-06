@@ -332,7 +332,7 @@ function getAVLSForecastForStop(stopAbbrev) {
       direction: sighting.direction,
       destination: sighting.destination,
       dueMins: finalDue,
-      eta: etaDate.toTimeString().slice(0, 5),
+      eta: formatLocalTime(etaDate),
       vehicleNumber: vehicle.tramNumber,
       source: 'avls'
     });
@@ -439,7 +439,7 @@ function parseXMLForecast(xmlString) {
             const createdDate = new Date(result.created);
             if (!isNaN(createdDate.getTime())) {
               const etaDate = new Date(createdDate.getTime() + dueMinutes * 60000);
-              eta = etaDate.toTimeString().slice(0, 5); // "HH:MM"
+              eta = formatLocalTime(etaDate); // "HH:MM" in Europe/Dublin
             }
           } catch (e) { /* ignore parse errors */ }
         }
@@ -843,7 +843,7 @@ function getSimulatedForecast(stopAbv) {
         direction: tram.direction,
         destination: tram.destination,
         dueMins: finalDue,
-        eta: etaDate.toTimeString().slice(0, 5)
+        eta: formatLocalTime(etaDate)
       });
     }
   });
