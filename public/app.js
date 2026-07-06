@@ -46,7 +46,7 @@ function setBottomSheetState(state) {
   
   let heightValue = '35vh';
   if (state === 'collapsed') {
-    heightValue = '60px';
+    heightValue = '44px';
   } else if (state === 'peek') {
     heightValue = '35vh';
   } else if (state === 'expanded') {
@@ -632,6 +632,7 @@ async function pollStatus() {
 // ==========================================================================
 async function selectStop(abbrev) {
   const prevSelected = selectedStopAbbrev;
+  const isNewStation = prevSelected !== abbrev;
   selectedStopAbbrev = abbrev;
   const stop = stopsMap[abbrev];
   if (!stop) return;
@@ -670,6 +671,16 @@ async function selectStop(abbrev) {
 
   // Fetch forecast arrivals
   await fetchStopForecast(abbrev);
+
+  // Only auto-expand bottom sheet when user selects a DIFFERENT station on mobile.
+  // If user taps the same station again, or if this is a periodic refresh, respect
+  // the user's current sheet position to avoid the sheet constantly popping up.
+  if (isNewStation && window.innerWidth <= 768) {
+    const sidebar = document.getElementById('main-sidebar');
+    if (sidebar && sidebar.classList.contains('state-collapsed')) {
+      setBottomSheetState('peek');
+    }
+  }
 }
 
 // Fetch departures board for selected stop
@@ -725,12 +736,6 @@ async function fetchStopForecast(abbrev) {
     document.getElementById('departures-loading').style.display = 'none';
     document.getElementById('departures-none-msg').style.display = 'flex';
     document.getElementById('departures-none-msg').innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> Error loading forecast.`;
-  }
-  
-  // Expand mobile bottom sheet automatically when stop is selected
-  const sidebar = document.getElementById('main-sidebar');
-  if (sidebar && window.innerWidth <= 768) {
-    setBottomSheetState('expanded');
   }
 }
 
@@ -1095,7 +1100,7 @@ function setupUIEventListeners() {
       let newHeight = startHeight - deltaY;
       const vh = window.innerHeight;
       const maxHeight = vh * 0.88;
-      const minHeight = 60;
+      const minHeight = 44;
 
       if (newHeight > maxHeight) newHeight = maxHeight;
       if (newHeight < minHeight) newHeight = minHeight;
@@ -1130,12 +1135,12 @@ function setupUIEventListeners() {
           else setBottomSheetState('collapsed');
         } else {
           // Flicked UP
-          if (startHeight < 150) setBottomSheetState('peek');
+          if (startHeight < 120) setBottomSheetState('peek');
           else setBottomSheetState('expanded');
         }
       } else {
         // Snapping thresholds
-        const collapsedThreshold = 150; 
+        const collapsedThreshold = 120; 
         const expandedThreshold = vh * 0.60;
 
         if (currentHeight < collapsedThreshold) {

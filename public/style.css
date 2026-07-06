@@ -1377,7 +1377,7 @@ body.light-theme .feature-badge {
 
   /* Three states for Mobile Bottom Sheet */
   .sidebar-panel.state-collapsed {
-    height: 60px;
+    height: 44px;
     overflow: hidden;
   }
 
