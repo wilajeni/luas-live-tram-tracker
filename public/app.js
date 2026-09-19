@@ -515,11 +515,12 @@ function updateTramMarkers(trams) {
       }
     }
 
+    const nextStopLine = tram.nextStop ? `<br>Next ${escapeHtml(tram.nextStop)} (${etaLabel})` : ` (${etaLabel})`;
     const tooltipHtml = `
       <div style="font-family: var(--font-body); font-size:0.8rem; font-weight:600;">
         <span style="color:${isRed ? 'var(--red-line)' : 'var(--green-line)'}">&#9632;</span>
         ${escapeHtml(tramLabel)}<br>
-        To ${escapeHtml(tram.destination)} (${etaLabel})
+        To ${escapeHtml(tram.destination)}${nextStopLine}
       </div>
     `;
 
