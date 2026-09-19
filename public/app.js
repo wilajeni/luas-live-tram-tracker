@@ -366,8 +366,11 @@ function formatFeedTime(isoString) {
 }
 
 function formatEta(dueMins) {
-  if (dueMins === null || dueMins === undefined || Number.isNaN(Number(dueMins))) return 'ETA unknown';
-  return dueMins <= 0.5 ? 'DUE' : `${Math.round(dueMins)} min`;
+  if (dueMins === null || dueMins === undefined) return 'ETA unknown';
+  if (typeof dueMins === 'string' && dueMins.trim().toUpperCase() === 'DUE') return 'DUE';
+  const num = Number(dueMins);
+  if (Number.isNaN(num)) return 'ETA unknown';
+  return num <= 0.5 ? 'DUE' : `${Math.round(num)} min`;
 }
 
 function escapeHtml(value) {
@@ -496,9 +499,10 @@ function updateTramMarkers(trams) {
     activeIds.add(tram.id);
     const isRed = tram.line.includes('Red');
     const tramLabel = tram.vehicleNumber ? `Tram ${tram.vehicleNumber}` : 'Luas tram';
-    const etaLabel = tram.dueMins === null || tram.dueMins === undefined
+    const isDue = tram.dueMins === 'DUE' || (typeof tram.dueMins === 'string' && tram.dueMins.trim().toUpperCase() === 'DUE') || (tram.dueMins !== null && tram.dueMins !== undefined && !Number.isNaN(Number(tram.dueMins)) && Number(tram.dueMins) <= 0.5);
+    const etaLabel = (tram.dueMins === null || tram.dueMins === undefined)
       ? 'ETA unknown'
-      : (tram.dueMins === 'DUE' ? 'DUE' : `${tram.dueMins}m`);
+      : (isDue ? 'DUE' : `${Math.round(Number(tram.dueMins))}m`);
 
     // Use the segment's from→to endpoints for heading.
     // The segment already encodes direction of travel correctly.
@@ -721,15 +725,21 @@ async function fetchStopForecast(abbrev, isBackgroundRefresh = false) {
 
   try {
     const response = await fetch(`/api/forecast/${abbrev}`);
+    if (!response.ok) {
+      const errData = await response.json().catch(() => ({}));
+      throw new Error(errData.error || `HTTP ${response.status}`);
+    }
     const data = await response.json();
     
     // Clear loading
     document.getElementById('departures-loading').style.display = 'none';
 
+    const tramsList = Array.isArray(data.trams) ? data.trams : [];
+
     // Group arrivals by inbound/outbound/terminating
-    const inboundTrams = data.trams.filter(t => t.direction === 'Inbound');
-    const outboundTrams = data.trams.filter(t => t.direction === 'Outbound');
-    const terminatingTrams = data.trams.filter(t => t.direction === 'Terminating');
+    const inboundTrams = tramsList.filter(t => t.direction === 'Inbound');
+    const outboundTrams = tramsList.filter(t => t.direction === 'Outbound');
+    const terminatingTrams = tramsList.filter(t => t.direction === 'Terminating');
 
     const hasTerminating = terminatingTrams.length > 0;
     const tabTerminating = document.getElementById('tab-terminating');
@@ -767,6 +777,7 @@ async function fetchStopForecast(abbrev, isBackgroundRefresh = false) {
     // Check if all lists are empty
     if (inboundTrams.length === 0 && outboundTrams.length === 0 && terminatingTrams.length === 0) {
       document.getElementById('departures-none-msg').style.display = 'flex';
+      document.getElementById('departures-none-msg').innerHTML = `<i class="fa-solid fa-clock-rotate-left"></i> No scheduled departures found.`;
     }
 
     // Restore scroll after DOM updates
@@ -779,7 +790,10 @@ async function fetchStopForecast(abbrev, isBackgroundRefresh = false) {
     console.error('Error fetching stop forecast:', error);
     document.getElementById('departures-loading').style.display = 'none';
     document.getElementById('departures-none-msg').style.display = 'flex';
-    document.getElementById('departures-none-msg').innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> Error loading forecast.`;
+    const msg = error.message && error.message.includes('Too many requests')
+      ? 'Rate limit reached. Retrying shortly...'
+      : 'Error loading forecast.';
+    document.getElementById('departures-none-msg').innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> ${escapeHtml(msg)}`;
   }
 }
 

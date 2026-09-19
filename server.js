@@ -15,7 +15,8 @@ const rateLimit = require('express-rate-limit');
 app.use(helmet({ contentSecurityPolicy: false }));
 app.use('/api/', rateLimit({
   windowMs: 60 * 1000,
-  max: 60,
+  max: 300,
+  skip: (req) => req.originalUrl.startsWith('/api/tiles'),
   message: { error: 'Too many requests, please try again later.' }
 }));
 
@@ -297,6 +298,8 @@ function getCurrentAVLSMapTrams() {
 function enrichVehicleForFinder(vehicle, isCurrent = true) {
   const stop = stopsMap[vehicle.nextStop] || null;
   const estimate = estimateVehicleCoordinates(vehicle);
+  const rawDue = getDynamicDueMins(vehicle);
+  const dueMins = rawDue === null ? null : (rawDue <= 0.5 ? 'DUE' : Math.round(rawDue));
   return {
     ...vehicle,
     id: `avls_${vehicle.tramNumber}`,
@@ -304,7 +307,7 @@ function enrichVehicleForFinder(vehicle, isCurrent = true) {
     isCurrent,
     nextStopAbv: vehicle.nextStop,
     nextStopName: stop ? stop.name : vehicle.nextStop,
-    dueMins: getDynamicDueMins(vehicle),
+    dueMins,
     coords: estimate ? estimate.coords : null,
     segment: estimate ? estimate.segment : null,
     lastSeenAt: vehicle.lastSeenAt || null,
