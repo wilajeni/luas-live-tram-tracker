@@ -408,11 +408,15 @@ function parseXMLForecast(xmlString) {
     trams: []
   };
 
-  const stopInfoMatch = xmlString.match(/<stopInfo created="([^"]+)" stop="([^"]+)" stopAbv="([^"]+)"/);
+  const stopInfoMatch = xmlString.match(/<stopInfo\s+([^>]+)>/);
   if (stopInfoMatch) {
-    result.created = stopInfoMatch[1];
-    result.stopName = stopInfoMatch[2];
-    result.stopAbv = stopInfoMatch[3];
+    const attrs = stopInfoMatch[1];
+    const createdMatch = attrs.match(/created="([^"]+)"/);
+    const stopNameMatch = attrs.match(/stop="([^"]+)"/);
+    const stopAbvMatch = attrs.match(/stopAbv="([^"]+)"/);
+    if (createdMatch) result.created = createdMatch[1];
+    if (stopNameMatch) result.stopName = stopNameMatch[1];
+    if (stopAbvMatch) result.stopAbv = stopAbvMatch[1];
   }
 
   const messageMatch = xmlString.match(/<message>([^<]*)<\/message>/);
@@ -421,18 +425,24 @@ function parseXMLForecast(xmlString) {
   }
 
   // Parse directions: <direction name="Inbound">...</direction>
-  const dirRegex = /<direction name="([^"]+)">([\s\S]*?)<\/direction>/g;
+  const dirRegex = /<direction[^>]*name="([^"]+)"[^>]*>([\s\S]*?)<\/direction>/g;
   let dirMatch;
   while ((dirMatch = dirRegex.exec(xmlString)) !== null) {
     const direction = dirMatch[1]; // 'Inbound' or 'Outbound'
     const content = dirMatch[2];
     
-    // Parse trams in this direction: <tram destination="Destination" dueMins="Mins" />
-    const tramRegex = /<tram destination="([^"]+)" dueMins="([^"]*)"\s*\/>/g;
+    // Parse trams flexibly in case attribute order changes
+    const tramRegex = /<tram\s+([^>]+?)\s*\/>/g;
     let tramMatch;
     while ((tramMatch = tramRegex.exec(content)) !== null) {
-      const dest = tramMatch[1];
-      const dueStr = tramMatch[2].trim();
+      const attrs = tramMatch[1];
+      const destMatch = attrs.match(/destination="([^"]+)"/);
+      const dueMatch = attrs.match(/dueMins="([^"]*)"/);
+      
+      if (!destMatch || !dueMatch) continue;
+      
+      const dest = destMatch[1];
+      const dueStr = dueMatch[1].trim();
       
       if (dest === 'See news for information') continue;
       
