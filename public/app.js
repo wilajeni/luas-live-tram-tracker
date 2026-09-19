@@ -17,9 +17,9 @@ let knownVehicles = [];
 let tramFinderLineFilter = 'All';
 let vehicleHistoryMeta = { currentCount: 0, lastUpdated: null };
 
-const MAP_TILES_DARK = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
-const MAP_TILES_LIGHT = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
-const MAP_ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+const MAP_TILES_DARK = '/api/tiles/dark/{z}/{x}/{y}.png';
+const MAP_TILES_LIGHT = '/api/tiles/light/{z}/{x}/{y}.png';
+const MAP_ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors | Esri';
 let tileLayer;
 
 // Map track geometries paths stop abbrevs
@@ -565,8 +565,34 @@ function isNormalAlert(text) {
   return /operating normally|running normally|no disruptions/i.test(text || '');
 }
 
-function findLineAlert(alerts, lineName) {
-  return (alerts || []).find(alert => alert.toLowerCase().includes(lineName.toLowerCase()));
+function findLineAlert(statusOrAlerts, lineName) {
+  const isRed = lineName.toLowerCase().includes('red');
+
+  // 1. Check structured line alerts from server if available
+  if (statusOrAlerts && statusOrAlerts.lineAlerts) {
+    const list = isRed ? statusOrAlerts.lineAlerts.red : statusOrAlerts.lineAlerts.green;
+    if (list && list.length > 0) {
+      const disruption = list.find(a => !isNormalAlert(a));
+      if (disruption) return disruption;
+      return list[0];
+    }
+  }
+
+  const alerts = Array.isArray(statusOrAlerts) ? statusOrAlerts : (statusOrAlerts?.activeAlerts || []);
+
+  // 2. Exact match on line name
+  const exact = alerts.find(a => a.toLowerCase().includes(lineName.toLowerCase()));
+  if (exact) return exact;
+
+  // 3. Fallback: match known station/branch landmarks
+  const redKeywords = ['red cow', 'tallaght', 'saggart', 'the point', 'connolly', 'heuston', 'belgard', 'citywest', 'red line'];
+  const greenKeywords = ['broombridge', 'brides glen', 'sandyford', 'stephen', 'parnell', 'green line'];
+  const targets = isRed ? redKeywords : greenKeywords;
+
+  return alerts.find(a => {
+    const lower = a.toLowerCase();
+    return targets.some(kw => lower.includes(kw));
+  });
 }
 
 function updateLineAlertBanner(elementId, lineName, alertText, lineClass) {
@@ -585,9 +611,9 @@ function updateLineAlertBanner(elementId, lineName, alertText, lineClass) {
     : `<i class="fa-solid fa-triangle-exclamation status-icon"></i><span>${escapeHtml(text)}</span>`;
 }
 
-function updateLineAlerts(alerts) {
-  updateLineAlertBanner('red-line-alert', 'Red Line', findLineAlert(alerts, 'Red Line'), 'red');
-  updateLineAlertBanner('green-line-alert', 'Green Line', findLineAlert(alerts, 'Green Line'), 'green');
+function updateLineAlerts(statusOrAlerts) {
+  updateLineAlertBanner('red-line-alert', 'Red Line', findLineAlert(statusOrAlerts, 'Red Line'), 'red');
+  updateLineAlertBanner('green-line-alert', 'Green Line', findLineAlert(statusOrAlerts, 'Green Line'), 'green');
 }
 
 async function pollStatus() {
@@ -621,7 +647,7 @@ async function pollStatus() {
     // Let's highlight based on local active selection
     // (Handled directly in click handler, but poll checks match)
 
-    updateLineAlerts(status.activeAlerts || []);
+    updateLineAlerts(status);
 
   } catch (error) {
     console.error('Error fetching system status:', error);

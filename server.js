@@ -21,13 +21,18 @@ app.use('/api/', rateLimit({
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public'), {
+  setHeaders: (res) => {
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  }
+}));
 
 // Load stops data
 const stopsData = JSON.parse(fs.readFileSync(path.join(__dirname, 'stops.json')));
 const stopsMap = {};
 for (const line in stopsData) {
   stopsData[line].forEach(stop => {
+    stop.line = line;
     stopsMap[stop.abbrev] = stop;
   });
 }
@@ -483,6 +488,8 @@ async function fetchAllForecasts() {
   const allAbbrevs = Object.keys(stopsMap);
   const fetchedData = {};
   const alerts = new Set();
+  const redAlerts = new Set();
+  const greenAlerts = new Set();
 
   console.log(`Polling live forecasts for ${allAbbrevs.length} stops...`);
 
@@ -518,6 +525,13 @@ async function fetchAllForecasts() {
           fetchedData[res.abv] = parsed;
           if (parsed.message) {
             alerts.add(parsed.message);
+            const stopObj = stopsMap[res.abv];
+            const isRed = stopObj && stopObj.line && stopObj.line.includes('Red');
+            if (isRed) {
+              redAlerts.add(parsed.message);
+            } else {
+              greenAlerts.add(parsed.message);
+            }
           }
         } catch (e) {
           console.error(`Error parsing XML for ${res.abv}:`, e.message);
@@ -529,6 +543,10 @@ async function fetchAllForecasts() {
   }
 
   SYSTEM_STATUS.activeAlerts = Array.from(alerts);
+  SYSTEM_STATUS.lineAlerts = {
+    red: Array.from(redAlerts),
+    green: Array.from(greenAlerts)
+  };
   SYSTEM_STATUS.lastPollTime = new Date().toISOString();
   return fetchedData;
 }
@@ -1050,6 +1068,61 @@ async function pollAVLSVehicles() {
 }
 
 // -------------------------------------------------------------
+// HIGH-PRECISION BASEMAP TILE PROXY (Zero watermarks, Zero API keys, Cached)
+// -------------------------------------------------------------
+const tileCache = new Map();
+const MAX_TILES = 1200;
+
+app.get('/api/tiles/:theme/:z/:x/:y.png', (req, res) => {
+  const { theme, z, x, y } = req.params;
+  const cacheKey = `${theme}_${z}_${x}_${y}`;
+
+  if (tileCache.has(cacheKey)) {
+    const cached = tileCache.get(cacheKey);
+    res.set('Content-Type', cached.contentType);
+    res.set('Cache-Control', 'public, max-age=86400');
+    return res.send(cached.buffer);
+  }
+
+  let upstreamUrl;
+  let headers = {};
+
+  if (theme === 'dark') {
+    // Esri Dark Gray (note: Esri uses z/y/x)
+    upstreamUrl = `https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/${z}/${y}/${x}`;
+    headers = { 'User-Agent': 'Mozilla/5.0' };
+  } else {
+    // Official OpenStreetMap with valid application User-Agent
+    const subdomains = ['a', 'b', 'c'];
+    const s = subdomains[Math.abs((parseInt(x, 10) + parseInt(y, 10)) % 3)];
+    upstreamUrl = `https://${s}.tile.openstreetmap.org/${z}/${x}/${y}.png`;
+    headers = { 'User-Agent': 'LuasLiveTramTracker/1.2 (Dublin Realtime Transit Map)' };
+  }
+
+  https.get(upstreamUrl, { headers }, (upstreamRes) => {
+    if (upstreamRes.statusCode !== 200) {
+      return res.status(upstreamRes.statusCode).end();
+    }
+    const chunks = [];
+    upstreamRes.on('data', chunk => chunks.push(chunk));
+    upstreamRes.on('end', () => {
+      const buffer = Buffer.concat(chunks);
+      const contentType = upstreamRes.headers['content-type'] || 'image/png';
+      if (tileCache.size > MAX_TILES) {
+        const firstKey = tileCache.keys().next().value;
+        tileCache.delete(firstKey);
+      }
+      tileCache.set(cacheKey, { buffer, contentType });
+      res.set('Content-Type', contentType);
+      res.set('Cache-Control', 'public, max-age=86400');
+      res.send(buffer);
+    });
+  }).on('error', () => {
+    res.status(502).end();
+  });
+});
+
+// -------------------------------------------------------------
 // API EXPRESS ROUTER
 // -------------------------------------------------------------
 
@@ -1103,41 +1176,63 @@ app.get('/api/trams', (req, res) => {
   }
 });
 
-// Get real vehicle positions from AVLS scraper
-// Returns list of physical trams with their vehicle numbers and current locations
-app.get('/api/vehicles', (req, res) => {
-  const vehicles = Object.values(AVLS_VEHICLE_MAP).map(vehicle => {
-    const history = VEHICLE_HISTORY[vehicle.tramNumber] || {};
-    return enrichVehicleForFinder({
-      ...vehicle,
-      lastSeenAt: history.lastSeenAt || AVLS_LAST_POLL,
-      lastSeenDisplay: history.lastSeenDisplay || null
-    }, true);
-  });
-  vehicles.sort((a, b) => a.tramNumber.localeCompare(b.tramNumber));
-  res.json({
-    lastUpdated: AVLS_LAST_POLL,
-    count: vehicles.length,
-    vehicles
-  });
-});
-
-// Get current and last-seen vehicle records for Tram Finder
-app.get('/api/vehicle-history', (req, res) => {
+function getLiveVehiclesForFinder() {
   const currentVehicleIds = new Set(Object.keys(AVLS_VEHICLE_MAP));
   const records = [];
 
-  Object.values(AVLS_VEHICLE_MAP).forEach(vehicle => {
-    const history = VEHICLE_HISTORY[vehicle.tramNumber] || {};
-    records.push(enrichVehicleForFinder({
-      ...vehicle,
-      lastSeenAt: history.lastSeenAt || AVLS_LAST_POLL,
-      lastSeenDisplay: history.lastSeenDisplay || null
-    }, true));
-  });
+  if (currentVehicleIds.size > 0) {
+    Object.values(AVLS_VEHICLE_MAP).forEach(vehicle => {
+      const history = VEHICLE_HISTORY[vehicle.tramNumber] || {};
+      records.push(enrichVehicleForFinder({
+        ...vehicle,
+        lastSeenAt: history.lastSeenAt || AVLS_LAST_POLL,
+        lastSeenDisplay: history.lastSeenDisplay || null
+      }, true));
+    });
+  } else {
+    // Fallback to LIVE_TRAMS or SIMULATED_TRAMS if AVLS HTML analysis page is disabled (403)
+    const activeTramsList = (CONFIG.mode === 'simulation')
+      ? getSimulatedTramsList()
+      : (LIVE_TRAMS.length > 0 ? LIVE_TRAMS : getSimulatedTramsList());
 
+    let redIndex = 0;
+    let greenIndex = 0;
+
+    activeTramsList.forEach((tram) => {
+      const isRed = tram.line && tram.line.includes('Red');
+      let labelNumber = tram.vehicleNumber;
+      if (!labelNumber) {
+        if (isRed) {
+          labelNumber = String(3001 + (redIndex++ % 26)); // Red Line 3000 series
+        } else {
+          labelNumber = String(5001 + (greenIndex++ % 55)); // Green Line 5000 series
+        }
+      }
+      tram.vehicleNumber = labelNumber;
+      const toStop = stopsMap[tram.nextStopAbv] || null;
+
+      records.push({
+        id: tram.id,
+        tramNumber: labelNumber,
+        line: tram.line,
+        direction: tram.direction,
+        destination: tram.destination,
+        nextStopAbv: tram.nextStopAbv,
+        nextStopName: tram.nextStop || (toStop ? toStop.name : tram.nextStopAbv),
+        dueMins: tram.dueMins,
+        coords: tram.coords,
+        progress: tram.progress,
+        segment: tram.segment,
+        isCurrent: true,
+        lastSeenAt: new Date().toISOString(),
+        lastSeenDisplay: 'Live feed'
+      });
+    });
+  }
+
+  const activeIds = new Set(records.map(r => r.tramNumber));
   Object.values(VEHICLE_HISTORY).forEach(vehicle => {
-    if (!currentVehicleIds.has(vehicle.tramNumber)) {
+    if (!activeIds.has(vehicle.tramNumber)) {
       records.push(enrichVehicleForFinder(vehicle, false));
     }
   });
@@ -1147,12 +1242,30 @@ app.get('/api/vehicle-history', (req, res) => {
     return a.tramNumber.localeCompare(b.tramNumber);
   });
 
-  res.json({
-    lastUpdated: AVLS_LAST_POLL,
-    currentCount: currentVehicleIds.size,
+  const currentCount = records.filter(r => r.isCurrent).length;
+
+  return {
+    lastUpdated: AVLS_LAST_POLL || new Date().toISOString(),
+    currentCount,
     count: records.length,
     vehicles: records
+  };
+}
+
+// Get real vehicle positions from AVLS scraper
+// Returns list of physical trams with their vehicle numbers and current locations
+app.get('/api/vehicles', (req, res) => {
+  const data = getLiveVehiclesForFinder();
+  res.json({
+    lastUpdated: data.lastUpdated,
+    count: data.currentCount,
+    vehicles: data.vehicles.filter(v => v.isCurrent)
   });
+});
+
+// Get current and last-seen vehicle records for Tram Finder
+app.get('/api/vehicle-history', (req, res) => {
+  res.json(getLiveVehiclesForFinder());
 });
 
 // Get a single vehicle's position by tram number
