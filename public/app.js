@@ -17,9 +17,9 @@ let knownVehicles = [];
 let tramFinderLineFilter = 'All';
 let vehicleHistoryMeta = { currentCount: 0, lastUpdated: null };
 
-const MAP_TILES_DARK = 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}';
-const MAP_TILES_LIGHT = 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}';
-const MAP_ATTRIBUTION = 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ';
+const MAP_TILES_DARK = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+const MAP_TILES_LIGHT = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+const MAP_ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 let tileLayer;
 
 // Map track geometries paths stop abbrevs

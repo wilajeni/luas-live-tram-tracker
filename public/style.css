@@ -1487,3 +1487,7 @@ body.light-theme .feature-badge {
   color: #a5d6ff;
 }
 
+/* OpenStreetMap Dark Mode Inversion Filter */
+.dark-theme .leaflet-tile-pane {
+  filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
+}

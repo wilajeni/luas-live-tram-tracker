@@ -656,17 +656,20 @@ function processLiveTrams(fetchedData) {
         const lat = coords[0];
         const lng = coords[1];
 
+        const fromStop = stopsMap[fromStopAbv];
+        const toStop = stopsMap[toStopAbv];
+
         compiledTrams.push({
           id: `live_${isRedLine?'red':'green'}_${direction.toLowerCase()}_${toStopAbv}_${Math.round(dueMins)}`,
           line: lineName,
           direction: direction,
           destination: fc.destination,
-          nextStop: toStop.name,
+          nextStop: toStop ? toStop.name : '',
           nextStopAbv: toStopAbv,
           dueMins: dueMins <= 0.5 ? 'DUE' : Math.round(dueMins),
           coords: [lat, lng],
           progress: progress,
-          segment: fromStopAbv ? { from: fromStop.name, to: toStop.name } : null
+          segment: (fromStop && toStop) ? { from: fromStop.name, to: toStop.name } : null
         });
       });
     });
